@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="My lists"
+        android:textSize="20dp"
+        android:id="@+id/activity_main_title"
+        android:gravity="center_horizontal"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:layout_height="50dp"
+            android:layout_margin="5dp"
+            android:id="@+id/activity_main_enterListName"
+            android:hint="Please enter your list name"
+            android:inputType="text"
+            android:maxLines="1"
+            android:imeOptions="actionDone"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="50dp"
+            android:layout_marginRight="5dp"
+            android:text="+"
+            android:id="@+id/activity_main_btnAddList"
+            android:onClick="onClickAddList"/>
+    </LinearLayout>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/activity_main_listOfLists"/>
+
+</LinearLayout>
