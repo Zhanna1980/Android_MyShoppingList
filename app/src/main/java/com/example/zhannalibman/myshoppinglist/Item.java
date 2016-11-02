@@ -8,15 +8,14 @@ import java.util.List;
  */
 public class Item {
     String name;
-    List<String> units = new ArrayList<>();
     String unit;
     float quantity;
-    float sum;
-    float price;
     boolean isBought = false;
 
     public Item(String name) {
         this.name = name;
+        this.quantity = 1;
+        this.unit = "";
     }
 
     public String getUnit() {
@@ -33,14 +32,6 @@ public class Item {
 
     public void setQuantity(float quantity) {
         this.quantity = quantity;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(float price) {
-        this.price = price;
     }
 
     public String getName() {

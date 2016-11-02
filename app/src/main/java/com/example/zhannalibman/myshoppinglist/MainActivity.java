@@ -13,12 +13,11 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_CODE = 14;
-    List<ShoppingList> listList;
+    List<ShoppingList> listList = CurrentState.getInstance().listList;
     SimpleDateFormat dateFormat;
 
     EditText activity_main_enterListName;
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        listList = new LinkedList<>();
+
         listArrayAdapter = new ShoppingListsAdapter(this,listList);
         activity_main_listOfLists.setAdapter(listArrayAdapter);
         dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
