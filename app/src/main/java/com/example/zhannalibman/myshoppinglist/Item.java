@@ -7,7 +7,7 @@ import java.util.List;
  * Created by zhannalibman on 06/07/16.
  */
 public class Item {
-    String name; 
+    String name;
     String unit;
     float quantity;
     boolean isBought = false;
