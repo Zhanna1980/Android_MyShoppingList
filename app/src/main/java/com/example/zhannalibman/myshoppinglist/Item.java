@@ -1,5 +1,7 @@
 package com.example.zhannalibman.myshoppinglist;
 
+import android.text.TextUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,9 +9,9 @@ import java.util.List;
  * Created by zhannalibman on 06/07/16.
  */
 public class Item {
-    String name;
-    String unit;
-    float quantity;
+    private String name;
+    private String unit;
+    private float quantity;
     boolean isBought = false;
 
     public Item(String name) {
@@ -23,7 +25,13 @@ public class Item {
     }
 
     public void setUnit(String unit) {
-        this.unit = unit;
+        if (unit != null){
+            String newUnit = unit.toLowerCase();
+            if (!CurrentState.getInstance().units.contains(newUnit)){
+                CurrentState.getInstance().units.add(newUnit);
+            }
+            this.unit = newUnit;
+        }
     }
 
     public double getQuantity() {
@@ -31,7 +39,9 @@ public class Item {
     }
 
     public void setQuantity(float quantity) {
-        this.quantity = quantity;
+        if (quantity >= 0) {
+            this.quantity = quantity;
+        }
     }
 
     public String getName() {
@@ -39,6 +49,8 @@ public class Item {
     }
 
     public void setName(String name) {
-        this.name = name;
+        if(name != null && !name.isEmpty()) {
+            this.name = name;
+        }
     }
 }
