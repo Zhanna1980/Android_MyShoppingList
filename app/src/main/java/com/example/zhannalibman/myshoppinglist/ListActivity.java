@@ -66,11 +66,11 @@ public class ListActivity extends AppCompatActivity {
         String enteredItemName = activity_list_enterItemName.getText().toString();
         if (!enteredItemName.isEmpty()) {
             if (isAlreadyInTheList(enteredItemName)) {
-                Toast.makeText(ListActivity.this, "it is in the list", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ListActivity.this, getString(R.string.already_in_list), Toast.LENGTH_SHORT).show();
             } else {
                 addItemToList(enteredItemName);
                 activity_list_enterItemName.setText("");
-                activity_list_enterItemName.setHint("Please type item name");
+                activity_list_enterItemName.setHint(getString(R.string.enterItemName_hint));
                 activity_list_enterItemName.requestFocus();
             }
         }

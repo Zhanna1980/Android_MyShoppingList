@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">My Shopping List</string>
+    <string name="main_activity_title">My lists</string>
+    <string name="enterListName_hint">Please enter your list name</string>
+    <string name="unnamed_list">Unnamed list</string>
+    <string name="alert_add_existing_list">Such list already exists. Add anyway?</string>
+    <string name="enterItemName_hint">Please type item name</string>
+    <string name="already_in_list">It is already in the list</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

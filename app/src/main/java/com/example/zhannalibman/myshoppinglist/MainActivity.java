@@ -11,14 +11,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_CODE = 14;
     List<ShoppingList> listList = CurrentState.getInstance().listList;
-    SimpleDateFormat dateFormat;
 
     EditText activity_main_enterListName;
     ListView activity_main_listOfLists;
@@ -46,9 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
         listArrayAdapter = new ShoppingListsAdapter(this,listList);
         activity_main_listOfLists.setAdapter(listArrayAdapter);
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-
-
     }
 
     public void onClickAddList(View view) {
@@ -58,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     public void checkAndAdd(){
         enteredListName = activity_main_enterListName.getText().toString();
         if (enteredListName.isEmpty()) {
-            enteredListName = "Unnamed list";
+            enteredListName = getString(R.string.unnamed_list);
         }
         if (isAlreadyInTheList(enteredListName)) {
             showDialog();
@@ -76,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             //InputMethodManager imm = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             //imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             activity_main_enterListName.setText("");
-            activity_main_enterListName.setHint("Please enter your list name");
+            activity_main_enterListName.setHint(getString(R.string.enterListName_hint));
             ListActivity.startWithListForResult(this, listList.get(0), REQUEST_CODE);
             //Toast.makeText(MainActivity.this, "Such list already exists.", Toast.LENGTH_SHORT).show();
 
@@ -92,9 +87,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void createNewList(String enteredListName){
-        Date d = new Date(System.currentTimeMillis());
-        String date = dateFormat.format(d);
-        ShoppingList newShoppingList = new ShoppingList(enteredListName, date);
+        ShoppingList newShoppingList = new ShoppingList(enteredListName);
         listList.add(0, newShoppingList);
         listArrayAdapter.notifyDataSetChanged();
     }
@@ -111,14 +104,14 @@ public class MainActivity extends AppCompatActivity {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setIcon(R.drawable.ic_mic_black_24dp);
-        alertDialogBuilder.setMessage("Such list already exists. Add anyway?");
-        alertDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        alertDialogBuilder.setMessage(getString(R.string.alert_add_existing_list));
+        alertDialogBuilder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 addListToListAndGoToListActivity();
             }
         });
-        alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        alertDialogBuilder.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 activity_main_enterListName.requestFocus();

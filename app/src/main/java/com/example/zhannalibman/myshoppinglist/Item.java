@@ -2,6 +2,7 @@ package com.example.zhannalibman.myshoppinglist;
 
 import android.text.TextUtils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class Item {
     public void setUnit(String unit) {
         if (unit != null){
             String newUnit = unit.toLowerCase();
-            if (!CurrentState.getInstance().units.contains(newUnit)){
+            if (!newUnit.isEmpty() && !CurrentState.getInstance().units.contains(newUnit)){
                 CurrentState.getInstance().units.add(newUnit);
             }
             this.unit = newUnit;
@@ -52,5 +53,14 @@ public class Item {
         if(name != null && !name.isEmpty()) {
             this.name = name;
         }
+    }
+
+    public String itemQuantityAndUnitsToString(){
+        return (new DecimalFormat("#.##").format(quantity)) + unit;
+    }
+
+    @Override
+    public String toString() {
+        return name + itemQuantityAndUnitsToString();
     }
 }

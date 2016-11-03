@@ -1,6 +1,7 @@
 package com.example.zhannalibman.myshoppinglist;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,13 +11,13 @@ import java.util.List;
  */
 public class ShoppingList implements Serializable {
 
-    String name;
-    String date;
+    private String name;
+    private Date date;
     List<Item> itemList;
 
-    public ShoppingList(String name, String date) {
+    public ShoppingList(String name) {
+        this.date = new Date(System.currentTimeMillis());
         this.name = name;
-        this.date = date;
         itemList = new ArrayList<>();
     }
 
@@ -29,10 +30,10 @@ public class ShoppingList implements Serializable {
     }
 
     public String getDate() {
-        return date;
+        return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setNewDate() {
+        this.date = new Date(System.currentTimeMillis());
     }
 }

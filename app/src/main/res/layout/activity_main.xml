@@ -7,8 +7,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="My lists"
-        android:textSize="20dp"
+        android:text="@string/main_activity_title"
+        android:textSize="20sp"
         android:id="@+id/activity_main_title"
         android:gravity="center_horizontal"/>
     <LinearLayout
@@ -21,7 +21,7 @@
             android:layout_height="50dp"
             android:layout_margin="5dp"
             android:id="@+id/activity_main_enterListName"
-            android:hint="Please enter your list name"
+            android:hint="@string/enterListName_hint"
             android:inputType="text"
             android:maxLines="1"
             android:imeOptions="actionDone"/>
@@ -29,7 +29,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="50dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginEnd="5dp"
             android:text="+"
             android:id="@+id/activity_main_btnAddList"
             android:onClick="onClickAddList"/>
