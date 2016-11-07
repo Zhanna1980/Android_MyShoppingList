@@ -8,4 +8,8 @@
     <string name="already_in_list">It is already in the list</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="speech_prompt">Say the item name</string>
+    <string name="speech_not_supported">Sorry! Your device doesn\'t support speech input</string>
+    <string name="no_internet_connection_for_speech">Sorry! Internet connection is needed for voice recognition</string>
+
 </resources>

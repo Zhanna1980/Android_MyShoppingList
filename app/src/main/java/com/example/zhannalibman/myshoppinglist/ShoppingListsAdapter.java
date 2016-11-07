@@ -1,7 +1,6 @@
 package com.example.zhannalibman.myshoppinglist;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,7 +62,7 @@ public class ShoppingListsAdapter extends ArrayAdapter<ShoppingList>{
         @Override
         public void onClick(View v) {
             location = (int)v.getTag();
-            ListActivity.startWithListForResult(activity, listList.get(location), MainActivity.REQUEST_CODE);
+            ListActivity.startWithListForResult(activity, listList.get(location), MainActivity.REQUEST_CODE_LIST_ACTIVITY);
         }
     };
 

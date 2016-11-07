@@ -2,20 +2,19 @@ package com.example.zhannalibman.myshoppinglist;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
-    public static final int REQUEST_CODE = 14;
+    public static final int REQUEST_CODE_LIST_ACTIVITY = 14;
     List<ShoppingList> listList = CurrentState.getInstance().listList;
 
     EditText activity_main_enterListName;
@@ -36,11 +35,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 checkAndAdd();
-                //ListActivity.startWithListForResult(MainActivity.this, listList.get(0), REQUEST_CODE);
+                //ListActivity.startWithListForResult(MainActivity.this, listList.get(0), REQUEST_CODE_LIST_ACTIVITY);
                 return false;
             }
         });
-
 
         listArrayAdapter = new ShoppingListsAdapter(this,listList);
         activity_main_listOfLists.setAdapter(listArrayAdapter);
@@ -72,8 +70,7 @@ public class MainActivity extends AppCompatActivity {
             //imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             activity_main_enterListName.setText("");
             activity_main_enterListName.setHint(getString(R.string.enterListName_hint));
-            ListActivity.startWithListForResult(this, listList.get(0), REQUEST_CODE);
-            //Toast.makeText(MainActivity.this, "Such list already exists.", Toast.LENGTH_SHORT).show();
+            ListActivity.startWithListForResult(this, listList.get(0), REQUEST_CODE_LIST_ACTIVITY);
 
     }
 

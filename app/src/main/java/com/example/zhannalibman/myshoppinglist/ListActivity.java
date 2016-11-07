@@ -1,9 +1,14 @@
 package com.example.zhannalibman.myshoppinglist;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
@@ -11,10 +16,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Locale;
+
 public class ListActivity extends AppCompatActivity {
+
+    private final int REQUEST_CODE_SPEECH_INPUT = 100;
+
     ShoppingList shoppingList;
 
     TextView activity_list_title;
+
     AutoCompleteTextView activity_list_enterItemName;
     ListView activity_list_itemsList;
 
@@ -60,6 +72,16 @@ public class ListActivity extends AppCompatActivity {
     }
 
     public void onClickVoiceAddItem(View view) {
+        ConnectivityManager cm = (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        if (isConnected) {
+            showPromptSpeechInput();
+        }
+        else{
+            Toast.makeText(this, getString(R.string.no_internet_connection_for_speech), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void addItemToListIfDoesNotExist(){
@@ -90,5 +112,44 @@ public class ListActivity extends AppCompatActivity {
         shoppingList.itemList.add(0, newItem);
         itemsInListAdapter.notifyDataSetChanged();
 
+    }
+
+    /**
+     * Showing google speech input dialog
+     * */
+    private void showPromptSpeechInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra("android.speech.extra.EXTRA_ADDITIONAL_LANGUAGES", new String[]{"he", "en-US"} );
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                getString(R.string.speech_prompt));
+        try {
+            startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.speech_not_supported),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Receiving speech input. There is space in switch for turning back from other activities
+     * */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    activity_list_enterItemName.setText(result.get(0));
+                }
+                break;
+            }
+
+        }
     }
 }
