@@ -3,13 +3,19 @@ package com.example.zhannalibman.myshoppinglist;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.ActionMode;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import java.util.List;
 
 
@@ -19,6 +25,9 @@ public class MainActivity extends AppCompatActivity {
 
     EditText activity_main_enterListName;
     ListView activity_main_listOfLists;
+    ActionBar actionBar;
+    ActionMode.Callback actionModeCallback;
+    ActionMode actionMode;
 
     private ShoppingListsAdapter listArrayAdapter;
 
@@ -35,13 +44,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 checkAndAdd();
-                //ListActivity.startWithListForResult(MainActivity.this, listList.get(0), REQUEST_CODE_LIST_ACTIVITY);
                 return false;
             }
         });
 
+        // Get a support ActionBar corresponding to this toolbar
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setIcon(R.mipmap.ic_launcher);
+
         listArrayAdapter = new ShoppingListsAdapter(this,listList);
         activity_main_listOfLists.setAdapter(listArrayAdapter);
+        createActionMode();
+
+
     }
 
     public void onClickAddList(View view) {
@@ -89,9 +105,6 @@ public class MainActivity extends AppCompatActivity {
         listArrayAdapter.notifyDataSetChanged();
     }
 
-
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -118,4 +131,52 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = alertDialogBuilder.create();
         dialog.show();
     }
+
+    public void createActionMode(){
+        actionModeCallback = new ActionMode.Callback() {
+            //methods of ActionMode.Callback interface
+            // Called when the action mode is created; startActionMode() was called
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                // Inflate a menu resource providing context menu items
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.menu_list, menu);
+                return true;
+            }
+
+            // Called each time the action mode is shown. Always called after onCreateActionMode, but
+            // may be called multiple times if the mode is invalidated.
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false; // Return false if nothing is done
+            }
+
+            // Called when the user selects a contextual menu item
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.edit:
+                        mode.finish();
+                        return true;
+                    case R.id.delete:
+                        mode.finish();
+                        return true;
+                    case R.id.share:
+                        //shareSelectedList();
+                        mode.finish(); // Action picked, so close the CAB
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            // Called when the user exits the action mode
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                actionMode = null;
+            }
+        };
+    }
+
+
 }

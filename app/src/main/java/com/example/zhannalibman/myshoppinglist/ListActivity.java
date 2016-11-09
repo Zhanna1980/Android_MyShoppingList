@@ -8,8 +8,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.ActionMode;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
@@ -24,8 +29,9 @@ public class ListActivity extends AppCompatActivity {
     private final int REQUEST_CODE_SPEECH_INPUT = 100;
 
     ShoppingList shoppingList;
-
-    TextView activity_list_title;
+    ActionBar actionBar;
+    ActionMode.Callback actionModeCallback;
+    ActionMode actionMode;
 
     AutoCompleteTextView activity_list_enterItemName;
     ListView activity_list_itemsList;
@@ -38,7 +44,6 @@ public class ListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        activity_list_title = (TextView)findViewById(R.id.activity_list_title);
         activity_list_itemsList = (ListView)findViewById(R.id.activity_list_itemsList);
         activity_list_enterItemName = (AutoCompleteTextView)findViewById(R.id.activity_list_enterItemName);
         activity_list_enterItemName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -52,10 +57,16 @@ public class ListActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         shoppingList = (ShoppingList)bundle.getSerializable("shoppingList");
-        activity_list_title.setText(shoppingList.getName());
+
+        // Get a support ActionBar corresponding to this toolbar
+        actionBar = getSupportActionBar();
+        // Enable the Up button
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle(shoppingList.getName());
 
         itemsInListAdapter = new ItemsInListAdapter(this, shoppingList.itemList);
         activity_list_itemsList.setAdapter(itemsInListAdapter);
+        createActionMode();
     }
 
 
@@ -151,5 +162,51 @@ public class ListActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+    public void createActionMode(){
+        actionModeCallback = new ActionMode.Callback() {
+            //methods of ActionMode.Callback interface
+            // Called when the action mode is created; startActionMode() was called
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                // Inflate a menu resource providing context menu items
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.menu_list, menu);
+                return true;
+            }
+
+            // Called each time the action mode is shown. Always called after onCreateActionMode, but
+            // may be called multiple times if the mode is invalidated.
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false; // Return false if nothing is done
+            }
+
+            // Called when the user selects a contextual menu item
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.edit:
+                        mode.finish();
+                        return true;
+                    case R.id.delete:
+                        mode.finish();
+                        return true;
+                    case R.id.share:
+                        //shareSelectedList();
+                        mode.finish(); // Action picked, so close the CAB
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            // Called when the user exits the action mode
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                actionMode = null;
+            }
+        };
     }
 }

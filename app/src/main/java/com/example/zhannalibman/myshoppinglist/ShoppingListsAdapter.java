@@ -1,6 +1,5 @@
 package com.example.zhannalibman.myshoppinglist;
 
-import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +13,11 @@ import java.util.List;
  * Created by zhannalibman on 08/07/16.
  */
 public class ShoppingListsAdapter extends ArrayAdapter<ShoppingList>{
-    private Activity activity;
+    private MainActivity activity;
     List<ShoppingList> listList;
     int location;
 
-    public ShoppingListsAdapter(Activity activity, List<ShoppingList> listList) {
+    public ShoppingListsAdapter(MainActivity activity, List<ShoppingList> listList) {
         super(activity, R.layout.list_in_lists, listList);
         this.activity = activity;
         this.listList = listList;
@@ -71,7 +70,16 @@ public class ShoppingListsAdapter extends ArrayAdapter<ShoppingList>{
         @Override
         public boolean onLongClick(View v) {
             location = (int)v.getTag();
-            return false;
+            if (activity.actionMode != null) {
+                return false;
+            }
+
+            // Start the CAB using the ActionMode.Callback defined above
+            activity.actionMode = activity.startActionMode(activity.actionModeCallback);
+            //((View)v.getParent()).setSelected(true);
+            //activity.activity_main_listOfLists.setSelection(location);
+            //v.setSelected(true);
+            return true;
         }
     };
 }
