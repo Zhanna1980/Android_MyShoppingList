@@ -14,16 +14,16 @@ import java.util.List;
  */
 public class ShoppingListsAdapter extends ArrayAdapter<ShoppingList>{
     private MainActivity activity;
-    List<ShoppingList> listList;
-    int location;
+    private List<ShoppingList> listList;
+    private int location;
 
-    public ShoppingListsAdapter(MainActivity activity, List<ShoppingList> listList) {
+    ShoppingListsAdapter(MainActivity activity, List<ShoppingList> listList) {
         super(activity, R.layout.list_in_lists, listList);
         this.activity = activity;
         this.listList = listList;
     }
 
-    static class ViewContainer{
+    private static class ViewContainer{
         LinearLayout listLayout;
         LinearLayout clickableListLayout;
         TextView listNameInList;
@@ -56,7 +56,7 @@ public class ShoppingListsAdapter extends ArrayAdapter<ShoppingList>{
         return singleList;
     }
 
-    View.OnClickListener onClickListener = new View.OnClickListener(){
+    private View.OnClickListener onClickListener = new View.OnClickListener(){
 
         @Override
         public void onClick(View v) {
@@ -65,7 +65,7 @@ public class ShoppingListsAdapter extends ArrayAdapter<ShoppingList>{
         }
     };
 
-    View.OnLongClickListener onLongClickListener = new View.OnLongClickListener(){
+    private View.OnLongClickListener onLongClickListener = new View.OnLongClickListener(){
 
         @Override
         public boolean onLongClick(View v) {
@@ -74,11 +74,9 @@ public class ShoppingListsAdapter extends ArrayAdapter<ShoppingList>{
                 return false;
             }
 
-            // Start the CAB using the ActionMode.Callback defined above
+            // Start actionMode
             activity.actionMode = activity.startActionMode(activity.actionModeCallback);
-            //((View)v.getParent()).setSelected(true);
-            //activity.activity_main_listOfLists.setSelection(location);
-            //v.setSelected(true);
+            ((View)v.getParent()).setSelected(true);
             return true;
         }
     };

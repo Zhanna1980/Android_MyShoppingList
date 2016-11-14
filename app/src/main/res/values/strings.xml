@@ -2,6 +2,7 @@
     <string name="app_name">My Shopping List</string>
     <string name="main_activity_title">My lists</string>
     <string name="enterListName_hint">Please enter your list name</string>
+    <string name="add">+</string>
     <string name="unnamed_list">Unnamed list</string>
     <string name="alert_add_existing_list">Such list already exists. Add anyway?</string>
     <string name="enterItemName_hint">Please type item name</string>
@@ -11,5 +12,9 @@
     <string name="speech_prompt">Say the item name</string>
     <string name="speech_not_supported">Sorry! Your device doesn\'t support speech input</string>
     <string name="no_internet_connection_for_speech">Sorry! Internet connection is needed for voice recognition</string>
-
+    <string name="edit">Edit</string>
+    <string name="share">Share</string>
+    <string name="delete">Delete</string>
+    <string name="move">Move</string>
+    <string name="copy">Copy</string>
 </resources>

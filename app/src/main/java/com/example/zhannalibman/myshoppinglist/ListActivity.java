@@ -172,7 +172,7 @@ public class ListActivity extends AppCompatActivity {
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 // Inflate a menu resource providing context menu items
                 MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.menu_list, menu);
+                inflater.inflate(R.menu.menu_item, menu);
                 return true;
             }
 
@@ -193,10 +193,13 @@ public class ListActivity extends AppCompatActivity {
                     case R.id.delete:
                         mode.finish();
                         return true;
-                    case R.id.share:
+                    case R.id.move:
                         //shareSelectedList();
                         mode.finish(); // Action picked, so close the CAB
                         return true;
+                    case R.id.copy:
+                        mode.finish();
+                        return  true;
                     default:
                         return false;
                 }

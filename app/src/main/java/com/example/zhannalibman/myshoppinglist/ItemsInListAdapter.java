@@ -1,9 +1,6 @@
 package com.example.zhannalibman.myshoppinglist;
 
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,18 +17,18 @@ import java.util.List;
  * Created by zhannalibman on 31/07/16.
  */
 public class ItemsInListAdapter extends ArrayAdapter<Item>{
-    private Activity activity;
-    List<Item> itemList;
-    int location;
-    int counterOfChecked = 0;
+    private ListActivity activity;
+    private List<Item> itemList;
+    private int location;
+    private int counterOfChecked = 0;
 
-    public ItemsInListAdapter(Activity activity, List<Item> itemList) {
+    ItemsInListAdapter(ListActivity activity, List<Item> itemList) {
         super(activity, R.layout.item_in_list, itemList);
         this.activity = activity;
         this.itemList = itemList;
     }
 
-    static class ViewContainer{
+    private static class ViewContainer{
         LinearLayout itemLayout;
         LinearLayout clickableLayoutinItem;
         CheckBox checkboxInItem;
@@ -70,23 +67,31 @@ public class ItemsInListAdapter extends ArrayAdapter<Item>{
     }
 
 
-    View.OnLongClickListener onLongClickListener = new View.OnLongClickListener(){
+    private View.OnLongClickListener onLongClickListener = new View.OnLongClickListener(){
 
         @Override
         public boolean onLongClick(View v) {
             location = (int)v.getTag();
-            return false;
+            if (activity.actionMode != null) {
+                return false;
+            }
+            //Start actionMode
+            activity.actionMode = activity.startActionMode(activity.actionModeCallback);
+            ((View)v.getParent()).setSelected(true);
+            return true;
         }
     };
 
-    OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener(){
+    private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener(){
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             location = (int)buttonView.getTag();
             Item item = getItem(location);
             remove(item);
-            item.isBought = isChecked;
+            if (item != null) {
+                item.isBought = isChecked;
+            }
             if (isChecked){
                 insert(item, itemList.size() - counterOfChecked);
                 counterOfChecked ++;
