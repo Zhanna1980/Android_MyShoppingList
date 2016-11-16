@@ -18,8 +18,7 @@
             android:id="@+id/activity_list_enterItemName"
             android:hint="@string/enterItemName_hint"
             android:inputType="text"
-            android:maxLines="1"
-            android:imeOptions="actionDone"/>
+            android:maxLines="1" />
         <Button
             android:layout_width="0dp"
             android:layout_weight="1"

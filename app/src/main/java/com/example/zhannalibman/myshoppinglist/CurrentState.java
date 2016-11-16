@@ -14,8 +14,8 @@ public class CurrentState {
     private static CurrentState instance;
 
     List<ShoppingList> listList;
-    List<String> usedItemsNames;
-    List<String> units;
+    ArrayList<String> usedItemsNames;
+    ArrayList<String> units;
 
     private CurrentState(){
         listList = new LinkedList<>();

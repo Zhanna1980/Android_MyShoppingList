@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -33,20 +34,21 @@ public class ListActivity extends AppCompatActivity {
     ActionMode.Callback actionModeCallback;
     ActionMode actionMode;
 
-    AutoCompleteTextView activity_list_enterItemName;
-    ListView activity_list_itemsList;
+    AutoCompleteTextView enterItemName;
+    ListView itemsList;
 
     private ItemsInListAdapter itemsInListAdapter;
-
+    private ArrayList<String> usedItems;
+    private ArrayAdapter<String> autoCompleteUnitsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        activity_list_itemsList = (ListView)findViewById(R.id.activity_list_itemsList);
-        activity_list_enterItemName = (AutoCompleteTextView)findViewById(R.id.activity_list_enterItemName);
-        activity_list_enterItemName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        itemsList = (ListView)findViewById(R.id.activity_list_itemsList);
+        enterItemName = (AutoCompleteTextView)findViewById(R.id.activity_list_enterItemName);
+        enterItemName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 addItemToListIfDoesNotExist();
@@ -58,6 +60,12 @@ public class ListActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         shoppingList = (ShoppingList)bundle.getSerializable("shoppingList");
 
+        //autocomplete
+        usedItems = CurrentState.getInstance().usedItemsNames;
+        autoCompleteUnitsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, usedItems);
+        enterItemName.setAdapter(autoCompleteUnitsAdapter);
+        enterItemName.setThreshold(1);
+
         // Get a support ActionBar corresponding to this toolbar
         actionBar = getSupportActionBar();
         // Enable the Up button
@@ -65,7 +73,7 @@ public class ListActivity extends AppCompatActivity {
         actionBar.setTitle(shoppingList.getName());
 
         itemsInListAdapter = new ItemsInListAdapter(this, shoppingList.itemList);
-        activity_list_itemsList.setAdapter(itemsInListAdapter);
+        itemsList.setAdapter(itemsInListAdapter);
         createActionMode();
     }
 
@@ -77,7 +85,7 @@ public class ListActivity extends AppCompatActivity {
         intent.putExtras(extras);
         fromActivity.startActivityForResult(intent, requestCode);
     }
-
+    //add button was clicked
     public void onClickAddItem(View view) {
         addItemToListIfDoesNotExist();
     }
@@ -96,15 +104,20 @@ public class ListActivity extends AppCompatActivity {
     }
 
     public void addItemToListIfDoesNotExist(){
-        String enteredItemName = activity_list_enterItemName.getText().toString();
+        String enteredItemName = enterItemName.getText().toString();
         if (!enteredItemName.isEmpty()) {
             if (isAlreadyInTheList(enteredItemName)) {
                 Toast.makeText(ListActivity.this, getString(R.string.already_in_list), Toast.LENGTH_SHORT).show();
             } else {
                 addItemToList(enteredItemName);
-                activity_list_enterItemName.setText("");
-                activity_list_enterItemName.setHint(getString(R.string.enterItemName_hint));
-                activity_list_enterItemName.requestFocus();
+                enterItemName.setText("");
+                enterItemName.setHint(getString(R.string.enterItemName_hint));
+                enterItemName.requestFocus();
+                if (autoCompleteUnitsAdapter.getPosition(enteredItemName) < 0) {
+                    autoCompleteUnitsAdapter.add(enteredItemName);
+                    usedItems.add(enteredItemName);
+                    //Toast.makeText(this, Integer.toString(CurrentState.getInstance().usedItemsNames.size()), Toast.LENGTH_SHORT).show();
+               }
             }
         }
     }
@@ -156,7 +169,7 @@ public class ListActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK && null != data) {
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    activity_list_enterItemName.setText(result.get(0));
+                    enterItemName.setText(result.get(0));
                 }
                 break;
             }
