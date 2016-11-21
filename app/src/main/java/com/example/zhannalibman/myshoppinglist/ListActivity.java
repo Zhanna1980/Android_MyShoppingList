@@ -72,7 +72,7 @@ public class ListActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(shoppingList.getName());
 
-        itemsInListAdapter = new ItemsInListAdapter(this, shoppingList.itemList);
+        itemsInListAdapter = new ItemsInListAdapter(this, shoppingList.itemList, shoppingList.inCart);
         itemsList.setAdapter(itemsInListAdapter);
         createActionMode();
     }

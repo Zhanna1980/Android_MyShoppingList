@@ -14,11 +14,13 @@ public class ShoppingList implements Serializable {
     private String name;
     private Date date;
     List<Item> itemList;
+    List<Item> inCart;
 
     public ShoppingList(String name) {
         this.date = new Date(System.currentTimeMillis());
         this.name = name;
         itemList = new ArrayList<>();
+        inCart = new ArrayList<>();
     }
 
     public String getName() {

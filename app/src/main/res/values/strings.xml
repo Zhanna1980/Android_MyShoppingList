@@ -17,4 +17,9 @@
     <string name="delete">Delete</string>
     <string name="move">Move</string>
     <string name="copy">Copy</string>
+    <string name="items_in_cart_header_title">In the cart:</string>
+    <string name="items_footer">item(s)</string>
+    <string name="check_all">Check all</string>
+    <string name="uncheck_all">Uncheck all</string>
+    <string name="delete_all">Delete All</string>
 </resources>
