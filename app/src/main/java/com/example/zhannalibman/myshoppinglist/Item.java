@@ -1,10 +1,6 @@
 package com.example.zhannalibman.myshoppinglist;
 
-import android.text.TextUtils;
-
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by zhannalibman on 06/07/16.
@@ -13,7 +9,7 @@ public class Item {
     private String name;
     private String unit;
     private float quantity;
-    boolean isBought = false;
+    private int previousPositionInItemList = 0;
 
     public Item(String name) {
         this.name = name;
@@ -62,5 +58,15 @@ public class Item {
     @Override
     public String toString() {
         return name + itemQuantityAndUnitsToString();
+    }
+
+    public int getPreviousPositionInItemList() {
+        return previousPositionInItemList;
+    }
+
+    public void setPreviousPositionInItemList(int previousPositionInItemList) {
+        if(previousPositionInItemList >= 0) {
+            this.previousPositionInItemList = previousPositionInItemList;
+        }
     }
 }

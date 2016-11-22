@@ -1,5 +1,6 @@
 package com.example.zhannalibman.myshoppinglist;
 
+import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +26,8 @@ public class ItemsInListAdapter extends BaseAdapter{
     private ListActivity activity;
     private List<Item> itemList;
     private List<Item> inCart;
-    private int location;
-    private int counterOfChecked = 0;
-    LayoutInflater inflater;
+    private int positionInListView;
+    private LayoutInflater inflater;
 
     ItemsInListAdapter(ListActivity activity, List<Item> itemList, List<Item> inCart) {
         super();
@@ -37,7 +37,9 @@ public class ItemsInListAdapter extends BaseAdapter{
         this.inflater = activity.getLayoutInflater();
     }
 
-
+    /**
+     * Class for holding pointers for view of item type in ListView
+     * */
     private static class ItemContainer {
         LinearLayout itemLayout;
         LinearLayout clickableLayoutinItem;
@@ -46,10 +48,16 @@ public class ItemsInListAdapter extends BaseAdapter{
         TextView itemQuantity;
     }
 
+    /**
+     * Class for holding pointers for view of header type
+     * */
     private static class HeaderContainer {
         TextView headerTitle;
     }
 
+    /**
+     * Class for holding pointers for view of footer type
+     * */
     private static class FooterContainer {
         TextView itemsAmount;
         Button btnCheckUnCheckAll;
@@ -85,7 +93,7 @@ public class ItemsInListAdapter extends BaseAdapter{
             return "header";
         }
         else{
-            return inCart.get(position);
+            return inCart.get(position - itemList.size() - 2);
         }
     }
     @Override
@@ -110,7 +118,7 @@ public class ItemsInListAdapter extends BaseAdapter{
                 view = getViewTypeItem(position, convertView, parent);
                 break;
             case TYPE_HEADER:
-                view = getViewTypeHeader(position, convertView, parent);
+                view = getViewTypeHeader(convertView, parent);
                 break;
             case TYPE_FOOTER:
                 view = getViewTypeFooter(position, convertView, parent);
@@ -141,21 +149,29 @@ public class ItemsInListAdapter extends BaseAdapter{
         }
         if (position < itemList.size()) {
             itemContainer.itemName.setText(itemList.get(position).getName());
-            /*itemContainer.itemName.setPaintFlags(itemList.get(position).isBought ? Paint.STRIKE_THRU_TEXT_FLAG : 0);
+            itemContainer.itemName.setPaintFlags(0);
             itemContainer.itemQuantity.setText(itemList.get(position).itemQuantityAndUnitsToString());
-            itemContainer.clickableLayoutinItem.setTag(position);
-            itemContainer.checkboxInItem.setTag(position);
             itemContainer.checkboxInItem.setOnCheckedChangeListener(null);
-            itemContainer.checkboxInItem.setChecked(itemList.get(position).isBought);
-            itemContainer.checkboxInItem.setOnCheckedChangeListener(onCheckedChangeListener);*/
+            itemContainer.checkboxInItem.setChecked(false);
+            itemContainer.checkboxInItem.setOnCheckedChangeListener(onCheckedChangeListener);
         }
-        else{
-
+        else {
+            itemContainer.itemName.setText(inCart.get(position - itemList.size() - 2).getName());
+            itemContainer.itemQuantity.setText(inCart.get(position - itemList.size() - 2).itemQuantityAndUnitsToString());
+            itemContainer.itemName.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+            itemContainer.checkboxInItem.setOnCheckedChangeListener(null);
+            itemContainer.checkboxInItem.setChecked(true);
+            itemContainer.checkboxInItem.setOnCheckedChangeListener(onCheckedChangeListener);
         }
+        itemContainer.clickableLayoutinItem.setTag(position);
+        itemContainer.checkboxInItem.setTag(position);
         return convertView;
     }
 
-    private View getViewTypeHeader(int position, View convertView, ViewGroup parent){
+    /**
+     * Returning view of header type.
+     * */
+    private View getViewTypeHeader(View convertView, ViewGroup parent){
         HeaderContainer headerContainer;
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.header_in_list, parent, false);
@@ -170,6 +186,9 @@ public class ItemsInListAdapter extends BaseAdapter{
         return convertView;
     }
 
+    /**
+     * Returning view of footer type.
+     * */
     private View getViewTypeFooter(int position, View convertView, ViewGroup parent){
         FooterContainer footerContainer;
         if (convertView == null) {
@@ -184,13 +203,16 @@ public class ItemsInListAdapter extends BaseAdapter{
             footerContainer = (FooterContainer)convertView.getTag();
         }
         if (position == itemList.size()) {
-            footerContainer.itemsAmount.setText(Integer.valueOf(itemList.size()).toString() + R.string.items_footer);
+            footerContainer.itemsAmount.setText(Integer.valueOf(itemList.size()).toString() + " " + activity.getString(R.string.items_footer));
             footerContainer.btnCheckUnCheckAll.setText(R.string.check_all);
         }
         else {
-            footerContainer.itemsAmount.setText(Integer.valueOf(inCart.size()).toString() + R.string.items_footer);
+            footerContainer.itemsAmount.setText(Integer.valueOf(inCart.size()).toString() + " " + activity.getString(R.string.items_footer));
             footerContainer.btnCheckUnCheckAll.setText(R.string.uncheck_all);
         }
+        footerContainer.btnCheckUnCheckAll.setOnClickListener(onBtnCheckUncheckAllClickListener);
+        footerContainer.btnDeleteAll.setTag(position);
+        footerContainer.btnDeleteAll.setOnClickListener(onBtnDeleteAllClickListener);
         return convertView;
     }
 
@@ -198,7 +220,7 @@ public class ItemsInListAdapter extends BaseAdapter{
 
         @Override
         public boolean onLongClick(View v) {
-            location = (int)v.getTag();
+            positionInListView = (int)v.getTag();
             if (activity.actionMode != null) {
                 return false;
             }
@@ -213,21 +235,64 @@ public class ItemsInListAdapter extends BaseAdapter{
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//            location = (int)buttonView.getTag();
-//            Item item = getItem(location);
-//            //remove(item);
-//            if (item != null) {
-//                item.isBought = isChecked;
-//            }
-//            if (isChecked){
-//                //insert(item, itemList.size() - counterOfChecked);
-//                counterOfChecked ++;
-//                //add(item);
-//            }
-//            else{
-//                //insert(item, 0);
-//                counterOfChecked --;
-//            }
+            positionInListView = (int)buttonView.getTag();
+            if(positionInListView < itemList.size()){
+                Item item = (Item)getItem(positionInListView);
+                item.setPreviousPositionInItemList(positionInListView);
+                itemList.remove(positionInListView);
+                inCart.add(0,item);
+            }
+            else{
+                Item item = (Item)getItem(positionInListView);
+                inCart.remove(positionInListView - itemList.size() - 2);
+                if(item.getPreviousPositionInItemList() < itemList.size()) {
+                    itemList.add(item.getPreviousPositionInItemList(), item);
+                }
+                else{
+                    itemList.add(item);
+                }
+            }
+            notifyDataSetChanged();
+        }
+    };
+
+    /**
+     * handling click event for btnCheckUncheckAll.
+     * If "Check all" is clicked all items are moved from itemList to inCart list.
+     * If "Uncheck all" is clicked all items are moved from inCart list to itemList.
+     * */
+    private View.OnClickListener onBtnCheckUncheckAllClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Button clickedButton = (Button)v;
+            String buttonText = clickedButton.getText().toString();
+            if (buttonText.equals(activity.getString(R.string.check_all))){
+                inCart.addAll(itemList);
+                itemList.clear();
+            }
+            else{
+                itemList.addAll(inCart);
+                inCart.clear();
+            }
+            notifyDataSetChanged();
+        }
+    };
+
+    /**
+     * Handling click event for btnDeleteAll
+     * If "Delete All" button was clicked at the footer of itemList section all items from the section would be removed.
+     * Otherwise if "Delete All" button was clicked at the footer of inCart section all items from the inCart section would be removed.
+     * */
+    private View.OnClickListener onBtnDeleteAllClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if((int)v.getTag() == itemList.size()){
+                itemList.clear();
+            }
+            else{
+                inCart.clear();
+            }
+            notifyDataSetChanged();
         }
     };
 }

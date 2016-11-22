@@ -78,6 +78,11 @@ public class ListActivity extends AppCompatActivity {
     }
 
 
+    /** Static method for using by other activities for starting ListActivity
+     *@param fromActivity Current activity
+     *@param shoppingList Shopping list which will be presented by ListActivity
+     *@param requestCode Int which will be passed to the method startActivityForResult(intent, requestCode)
+    * */
     public static void startWithListForResult(Activity fromActivity, ShoppingList shoppingList, int requestCode){
         Intent intent = new Intent(fromActivity, ListActivity.class);
         Bundle extras = new Bundle();
@@ -130,7 +135,10 @@ public class ListActivity extends AppCompatActivity {
         }
         return false;
     }
-
+    /**
+     * Creating a new Item with entered by the user name and adding it to the itemList in current shopping list
+     * @param enteredName string that represents new item name typed by the user
+    * */
     public void addItemToList(String enteredName){
         Item newItem = new Item(enteredName);
         shoppingList.itemList.add(0, newItem);
