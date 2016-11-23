@@ -18,7 +18,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
-
+/**
+ * Represents the list of all shopping lists.
+ * */
 public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_LIST_ACTIVITY = 14;
     List<ShoppingList> listList = CurrentState.getInstance().listList;
@@ -156,13 +158,15 @@ public class MainActivity extends AppCompatActivity {
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.edit:
+                        editSelectedList (listArrayAdapter.getPositionOfSelectedList());
                         mode.finish();
                         return true;
                     case R.id.delete:
+                        deleteSelectedList (listArrayAdapter.getPositionOfSelectedList());
                         mode.finish();
                         return true;
                     case R.id.share:
-                        //shareSelectedList();
+                        shareSelectedList (listArrayAdapter.getPositionOfSelectedList());
                         mode.finish(); // Action picked, so close the CAB
                         return true;
                     default:
@@ -176,6 +180,35 @@ public class MainActivity extends AppCompatActivity {
                 actionMode = null;
             }
         };
+    }
+
+    /**
+     * Edits the name of selected list.
+     * @param positionInListList index of the selected item in listList.
+     * */
+    public void editSelectedList (int positionInListList){
+
+    }
+
+    /**
+     * Deletes selected list.
+     * @param positionInListList index of the selected item in listList.
+     * */
+    public void deleteSelectedList (int positionInListList){
+        listList.remove(positionInListList);
+        listArrayAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Shares selected list.
+     * @param positionInListList index of the selected item in listList.
+     * */
+    public void shareSelectedList (int positionInListList){
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "some subject...");
+        intent.putExtra(Intent.EXTRA_TEXT, "some text...");
+        startActivity(Intent.createChooser(intent, "Message"));
     }
 
 

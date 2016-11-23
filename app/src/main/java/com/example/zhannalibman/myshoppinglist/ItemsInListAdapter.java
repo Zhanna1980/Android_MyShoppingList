@@ -26,7 +26,7 @@ public class ItemsInListAdapter extends BaseAdapter{
     private ListActivity activity;
     private List<Item> itemList;
     private List<Item> inCart;
-    private int positionInListView;
+    private int positionOfSelectedItem;
     private LayoutInflater inflater;
 
     ItemsInListAdapter(ListActivity activity, List<Item> itemList, List<Item> inCart) {
@@ -35,6 +35,10 @@ public class ItemsInListAdapter extends BaseAdapter{
         this.itemList = itemList;
         this.inCart = inCart;
         this.inflater = activity.getLayoutInflater();
+    }
+
+    public int getPositionOfSelectedItem() {
+        return positionOfSelectedItem;
     }
 
     /**
@@ -216,11 +220,14 @@ public class ItemsInListAdapter extends BaseAdapter{
         return convertView;
     }
 
+    /**
+     * Defining onLongClickListener for starting actionMode for selected item.
+     * */
     private View.OnLongClickListener onLongClickListener = new View.OnLongClickListener(){
 
         @Override
         public boolean onLongClick(View v) {
-            positionInListView = (int)v.getTag();
+            positionOfSelectedItem = (int)v.getTag();
             if (activity.actionMode != null) {
                 return false;
             }
@@ -231,11 +238,14 @@ public class ItemsInListAdapter extends BaseAdapter{
         }
     };
 
+    /**
+     * Handling checking events for checkBoxes in views of type item
+     * */
     private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener(){
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            positionInListView = (int)buttonView.getTag();
+            int positionInListView = (int)buttonView.getTag();
             if(positionInListView < itemList.size()){
                 Item item = (Item)getItem(positionInListView);
                 item.setPreviousPositionInItemList(positionInListView);

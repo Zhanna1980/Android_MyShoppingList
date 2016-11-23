@@ -95,6 +95,11 @@ public class ListActivity extends AppCompatActivity {
         addItemToListIfDoesNotExist();
     }
 
+    /**
+     * Method for handling onClick event for btnVoiceAdding. Checks internet connection.
+     * If the device is connected to internet calls for the metod showPromptSpeechInput().
+     * Otherwise makes toast that there is no internet connection for voice recognition
+     * */
     public void onClickVoiceAddItem(View view) {
         ConnectivityManager cm = (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -135,6 +140,7 @@ public class ListActivity extends AppCompatActivity {
         }
         return false;
     }
+
     /**
      * Creating a new Item with entered by the user name and adding it to the itemList in current shopping list
      * @param enteredName string that represents new item name typed by the user
@@ -207,18 +213,32 @@ public class ListActivity extends AppCompatActivity {
             // Called when the user selects a contextual menu item
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                int positionInList = itemsInListAdapter.getPositionOfSelectedItem();
+                boolean isSelectedItemInItemList;
+                int positionInSectionList;
+                if (positionInList < shoppingList.itemList.size()){
+                    isSelectedItemInItemList = true;
+                    positionInSectionList = positionInList;
+                }
+                else{
+                    isSelectedItemInItemList = false;
+                    positionInSectionList = positionInList - shoppingList.itemList.size() - 2;
+                }
                 switch (item.getItemId()) {
                     case R.id.edit:
-                        mode.finish();
+                        editSelectedItem(isSelectedItemInItemList,positionInSectionList);
+                        mode.finish(); // Action picked, so close the CAB
                         return true;
                     case R.id.delete:
+                        deleteSelectedItem(isSelectedItemInItemList,positionInSectionList);
                         mode.finish();
                         return true;
                     case R.id.move:
-                        //shareSelectedList();
-                        mode.finish(); // Action picked, so close the CAB
+                        moveSelectedItem(isSelectedItemInItemList,positionInSectionList);
+                        mode.finish();
                         return true;
                     case R.id.copy:
+                        copySelectedItem(isSelectedItemInItemList,positionInSectionList);
                         mode.finish();
                         return  true;
                     default:
@@ -232,5 +252,30 @@ public class ListActivity extends AppCompatActivity {
                 actionMode = null;
             }
         };
+    }
+
+    /**
+     * Deletes selected item
+     * */
+    public void deleteSelectedItem(boolean isSelectedItemInItemList, int positionInSectionList){
+        if (isSelectedItemInItemList){
+            shoppingList.itemList.remove(positionInSectionList);
+        }
+        else{
+            shoppingList.inCart.remove(positionInSectionList);
+        }
+        itemsInListAdapter.notifyDataSetChanged();
+    }
+
+    public void editSelectedItem(boolean isSelectedItemInItemList, int positionInSectionList){
+
+    }
+
+    public void copySelectedItem(boolean isSelectedItemInItemList, int positionInSectionList){
+
+    }
+
+    public void moveSelectedItem(boolean isSelectedItemInItemList, int positionInSectionList){
+
     }
 }

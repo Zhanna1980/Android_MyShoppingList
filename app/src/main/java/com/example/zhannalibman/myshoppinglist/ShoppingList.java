@@ -38,4 +38,10 @@ public class ShoppingList implements Serializable {
     public void setNewDate() {
         this.date = new Date(System.currentTimeMillis());
     }
+
+    @Override
+    public String toString() {
+        String listAsString = "";
+        return listAsString;
+    }
 }

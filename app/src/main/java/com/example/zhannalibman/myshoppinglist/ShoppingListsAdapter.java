@@ -15,12 +15,16 @@ import java.util.List;
 public class ShoppingListsAdapter extends ArrayAdapter<ShoppingList>{
     private MainActivity activity;
     private List<ShoppingList> listList;
-    private int location;
+    private int positionOfSelectedList;
 
     ShoppingListsAdapter(MainActivity activity, List<ShoppingList> listList) {
         super(activity, R.layout.list_in_lists, listList);
         this.activity = activity;
         this.listList = listList;
+    }
+
+    public int getPositionOfSelectedList() {
+        return positionOfSelectedList;
     }
 
     private static class ViewContainer{
@@ -60,20 +64,22 @@ public class ShoppingListsAdapter extends ArrayAdapter<ShoppingList>{
 
         @Override
         public void onClick(View v) {
-            location = (int)v.getTag();
+            int location = (int)v.getTag();
             ListActivity.startWithListForResult(activity, listList.get(location), MainActivity.REQUEST_CODE_LIST_ACTIVITY);
         }
     };
 
+    /**
+     * Defining onLongClickListener for starting actionMode for selected list.
+     * */
     private View.OnLongClickListener onLongClickListener = new View.OnLongClickListener(){
 
         @Override
         public boolean onLongClick(View v) {
-            location = (int)v.getTag();
+            positionOfSelectedList = (int)v.getTag();
             if (activity.actionMode != null) {
                 return false;
             }
-
             // Start actionMode
             activity.actionMode = activity.startActionMode(activity.actionModeCallback);
             ((View)v.getParent()).setSelected(true);
