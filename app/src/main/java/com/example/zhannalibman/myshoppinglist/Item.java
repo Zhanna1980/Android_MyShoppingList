@@ -57,7 +57,7 @@ public class Item {
 
     @Override
     public String toString() {
-        return name + itemQuantityAndUnitsToString();
+        return name + " " + itemQuantityAndUnitsToString();
     }
 
     public int getPreviousPositionInItemList() {

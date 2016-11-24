@@ -56,40 +56,44 @@ public class ListActivity extends AppCompatActivity {
             }
         });
 
-
-        Bundle bundle = getIntent().getExtras();
-        shoppingList = (ShoppingList)bundle.getSerializable("shoppingList");
-
-        //autocomplete
-        usedItems = CurrentState.getInstance().usedItemsNames;
-        autoCompleteUnitsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, usedItems);
-        enterItemName.setAdapter(autoCompleteUnitsAdapter);
-        enterItemName.setThreshold(1);
-
         // Get a support ActionBar corresponding to this toolbar
         actionBar = getSupportActionBar();
         // Enable the Up button
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(shoppingList.getName());
 
-        itemsInListAdapter = new ItemsInListAdapter(this, shoppingList.itemList, shoppingList.inCart);
-        itemsList.setAdapter(itemsInListAdapter);
-        createActionMode();
+        //Receiving intent with index of the current list
+        int shoppingListIndexInListList = getIntent().getIntExtra("shoppingListIndexInListList", -1);
+        if (shoppingListIndexInListList > -1 && shoppingListIndexInListList < CurrentState.getInstance().listList.size()) {
+            shoppingList = CurrentState.getInstance().listList.get(shoppingListIndexInListList);
+            actionBar.setTitle(shoppingList.getName());
+            //autocomplete
+            usedItems = CurrentState.getInstance().usedItemsNames;
+            autoCompleteUnitsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, usedItems);
+            enterItemName.setAdapter(autoCompleteUnitsAdapter);
+            enterItemName.setThreshold(1);
+            //setting adapter for the listView
+            itemsInListAdapter = new ItemsInListAdapter(this, shoppingList.itemList, shoppingList.inCart);
+            itemsList.setAdapter(itemsInListAdapter);
+            //creating action mode
+            createActionMode();
+        }
+        else{
+            Toast.makeText(this, this.getString(R.string.error), Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
 
     /** Static method for using by other activities for starting ListActivity
      *@param fromActivity Current activity
-     *@param shoppingList Shopping list which will be presented by ListActivity
-     *@param requestCode Int which will be passed to the method startActivityForResult(intent, requestCode)
+     *@param index Shopping list index in listList
     * */
-    public static void startWithListForResult(Activity fromActivity, ShoppingList shoppingList, int requestCode){
+    public static void startListActivity(Activity fromActivity, int index){
         Intent intent = new Intent(fromActivity, ListActivity.class);
-        Bundle extras = new Bundle();
-        extras.putSerializable("shoppingList", shoppingList);
-        intent.putExtras(extras);
-        fromActivity.startActivityForResult(intent, requestCode);
+        intent.putExtra("shoppingListIndexInListList", index);
+        fromActivity.startActivity(intent);
     }
+
     //add button was clicked
     public void onClickAddItem(View view) {
         addItemToListIfDoesNotExist();

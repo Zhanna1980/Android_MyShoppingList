@@ -65,7 +65,7 @@ public class ShoppingListsAdapter extends ArrayAdapter<ShoppingList>{
         @Override
         public void onClick(View v) {
             int location = (int)v.getTag();
-            ListActivity.startWithListForResult(activity, listList.get(location), MainActivity.REQUEST_CODE_LIST_ACTIVITY);
+            ListActivity.startListActivity(activity, location);
         }
     };
 

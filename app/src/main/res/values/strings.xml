@@ -21,5 +21,7 @@
     <string name="items_footer">item(s)</string>
     <string name="check_all">Check all</string>
     <string name="uncheck_all">Uncheck all</string>
-    <string name="delete_all">Delete All</string>
+    <string name="delete_all">Delete all</string>
+    <string name="sharing_chooser_title">Sharing</string>
+    <string name="error">Error</string>
 </resources>

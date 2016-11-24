@@ -1,6 +1,5 @@
 package com.example.zhannalibman.myshoppinglist;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,7 +8,7 @@ import java.util.List;
 /**
  * Created by zhannalibman on 06/07/16.
  */
-public class ShoppingList implements Serializable {
+public class ShoppingList {
 
     private String name;
     private Date date;
@@ -41,7 +40,12 @@ public class ShoppingList implements Serializable {
 
     @Override
     public String toString() {
-        String listAsString = "";
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(name + System.lineSeparator());
+        for (Item item :itemList){
+            stringBuilder.append(item.toString() + System.lineSeparator());
+        }
+        String listAsString = stringBuilder.toString();
         return listAsString;
     }
 }

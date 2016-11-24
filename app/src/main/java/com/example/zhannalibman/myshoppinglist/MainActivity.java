@@ -2,6 +2,7 @@ package com.example.zhannalibman.myshoppinglist;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -81,14 +82,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void addListToListAndGoToListActivity (){
-
-
             createNewList(enteredListName);
             //InputMethodManager imm = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             //imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             activity_main_enterListName.setText("");
             activity_main_enterListName.setHint(getString(R.string.enterListName_hint));
-            ListActivity.startWithListForResult(this, listList.get(0), REQUEST_CODE_LIST_ACTIVITY);
+            ListActivity.startListActivity(this, 0);
 
     }
 
@@ -206,9 +205,17 @@ public class MainActivity extends AppCompatActivity {
     public void shareSelectedList (int positionInListList){
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_SUBJECT, "some subject...");
-        intent.putExtra(Intent.EXTRA_TEXT, "some text...");
-        startActivity(Intent.createChooser(intent, "Message"));
+        intent.putExtra(Intent.EXTRA_SUBJECT, listList.get(positionInListList).getName());
+        intent.putExtra(Intent.EXTRA_TEXT, listList.get(positionInListList).toString());
+        //Verifies there is an app to receive the intent
+        PackageManager packageManager = getPackageManager();
+        List activities = packageManager.queryIntentActivities(intent,
+                PackageManager.MATCH_DEFAULT_ONLY);
+        boolean isIntentSafe = activities.size() > 0;
+        if (isIntentSafe) {
+            startActivity(Intent.createChooser(intent, getString(R.string.sharing_chooser_title) + " "
+                    + listList.get(positionInListList).getName()));
+        }
     }
 
 
