@@ -28,14 +28,16 @@ import java.util.Locale;
 public class ListActivity extends AppCompatActivity {
 
     private final int REQUEST_CODE_SPEECH_INPUT = 100;
+    private final int REQUEST_CODE_EDIT_ITEM = 200;
 
-    ShoppingList shoppingList;
-    ActionBar actionBar;
+    private ShoppingList shoppingList;
+    private int shoppingListIndexInListList;
+    private ActionBar actionBar;
     ActionMode.Callback actionModeCallback;
     ActionMode actionMode;
 
-    AutoCompleteTextView enterItemName;
-    ListView itemsList;
+    private AutoCompleteTextView enterItemName;
+    private ListView itemsList;
 
     private ItemsInListAdapter itemsInListAdapter;
     private ArrayList<String> usedItems;
@@ -62,7 +64,7 @@ public class ListActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         //Receiving intent with index of the current list
-        int shoppingListIndexInListList = getIntent().getIntExtra("shoppingListIndexInListList", -1);
+        shoppingListIndexInListList = getIntent().getIntExtra("shoppingListIndexInListList", -1);
         if (shoppingListIndexInListList > -1 && shoppingListIndexInListList < CurrentState.getInstance().listList.size()) {
             shoppingList = CurrentState.getInstance().listList.get(shoppingListIndexInListList);
             actionBar.setTitle(shoppingList.getName());
@@ -272,7 +274,11 @@ public class ListActivity extends AppCompatActivity {
     }
 
     public void editSelectedItem(boolean isSelectedItemInItemList, int positionInSectionList){
-
+        Intent intent = new Intent(this, EditItemActivity.class);
+        intent.putExtra("shoppingListIndexInListList", shoppingListIndexInListList);
+        intent.putExtra("isSelectedItemInItemList", isSelectedItemInItemList);
+        intent.putExtra("positionInSectionList", positionInSectionList);
+        startActivityForResult(intent, REQUEST_CODE_EDIT_ITEM);
     }
 
     public void copySelectedItem(boolean isSelectedItemInItemList, int positionInSectionList){

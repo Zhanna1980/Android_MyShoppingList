@@ -24,4 +24,9 @@
     <string name="delete_all">Delete all</string>
     <string name="sharing_chooser_title">Sharing</string>
     <string name="error">Error</string>
+    <string name="quantity">Quantity</string>
+    <string name="units">Units</string>
+    <string name="category">Category</string>
+    <string name="notes">Notes</string>
+    <string name="none">None</string>
 </resources>

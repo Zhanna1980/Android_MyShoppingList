@@ -9,6 +9,9 @@ public class Item {
     private String name;
     private String unit;
     private float quantity;
+    private String category;
+    private String notes;
+
     private int previousPositionInItemList = 0;
 
     public Item(String name) {
@@ -51,8 +54,32 @@ public class Item {
         }
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        if ( category != null && !category.isEmpty()) {
+            this.category = category;
+        }
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        if (notes != null && !notes.isEmpty()) {
+            this.notes = notes;
+        }
+    }
+
+    public String itemQuantityToString(){
+        return new DecimalFormat("#.##").format(quantity);
+    }
+
     public String itemQuantityAndUnitsToString(){
-        return (new DecimalFormat("#.##").format(quantity)) + unit;
+        return itemQuantityToString() + unit;
     }
 
     @Override
