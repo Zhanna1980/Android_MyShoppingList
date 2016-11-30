@@ -10,6 +10,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import static java.lang.Float.parseFloat;
+
 public class EditItemActivity extends AppCompatActivity {
 
     private EditText editItemName;
@@ -83,6 +85,9 @@ public class EditItemActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     *Adding Done button to ActionBar
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -90,10 +95,13 @@ public class EditItemActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Responding on ActionBar options click
+     * */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            // This is the up button
+            // Up button is clicked
             case android.R.id.home:
                 Intent upIntent = new Intent();
                 setResult(RESULT_CANCELED, upIntent);
@@ -111,15 +119,33 @@ public class EditItemActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Picking all the entered data
+     * */
     private void saveDataAfterEditing(){
-        //TO DO: save all changes
         String changedName = editItemName.getText().toString();
+        String changedQuantity = enterQuantity.getText().toString();
+        String changedUnits = enterUnits.getText().toString();
+        String changedCategory = enterCategory.getText().toString();
+        String notes = enterNotes.getText().toString();
         if (!changedName.isEmpty()){
             editedItem.setName(changedName);
         }
         else{
             Toast.makeText(this, getString(R.string.enterItemName_hint), Toast.LENGTH_SHORT).show();
             return;
+        }
+        if (!changedQuantity.isEmpty()){
+            editedItem.setQuantity(parseFloat(changedQuantity));
+        }
+        if (!changedUnits.isEmpty()){
+            editedItem.setUnit(changedUnits);
+        }
+        if (!changedCategory.isEmpty()){
+            editedItem.setCategory(changedCategory);
+        }
+        if (!notes.isEmpty()){
+            editedItem.setNotes(notes);
         }
     }
 }
