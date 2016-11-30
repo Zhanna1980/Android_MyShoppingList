@@ -21,7 +21,9 @@
         <activity
             android:name=".ListActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".EditItemActivity"></activity>
+        <activity
+            android:name=".EditItemActivity"
+            android:parentActivityName=".ListActivity" />
     </application>
 
 </manifest>

@@ -193,6 +193,16 @@ public class ListActivity extends AppCompatActivity {
                 }
                 break;
             }
+            case REQUEST_CODE_EDIT_ITEM:{
+                if (resultCode == RESULT_OK){
+                    Toast.makeText(this, "Result_ok", Toast.LENGTH_SHORT).show();
+                    itemsInListAdapter.notifyDataSetChanged();
+                }
+                else{
+                    Toast.makeText(this, "Result_canceled", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
 
         }
     }
