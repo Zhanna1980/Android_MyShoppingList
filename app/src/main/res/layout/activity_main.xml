@@ -16,13 +16,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/enterListNameLayout"
         android:orientation="horizontal">
         <EditText
             android:layout_width="0dp"
             android:layout_weight="5"
             android:layout_height="50dp"
             android:layout_margin="5dp"
-            android:id="@+id/activity_main_enterListName"
+            android:id="@+id/enterListName"
             android:hint="@string/enterListName_hint"
             android:inputType="text"
             android:maxLines="1"
@@ -33,13 +34,13 @@
             android:layout_height="50dp"
             android:layout_marginEnd="5dp"
             android:text="@string/add"
-            android:id="@+id/activity_main_btnAddList"
+            android:id="@+id/btnAddList"
             android:onClick="onClickAddList"/>
     </LinearLayout>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/activity_main_listOfLists"
+        android:id="@+id/listOfLists"
         android:choiceMode="singleChoice"
         />
 

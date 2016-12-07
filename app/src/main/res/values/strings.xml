@@ -30,4 +30,5 @@
     <string name="notes">Notes</string>
     <string name="none">None</string>
     <string name="done">Done</string>
+    <string name="no_camera">Camera is not available</string>
 </resources>

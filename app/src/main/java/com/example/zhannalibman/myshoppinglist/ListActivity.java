@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.speech.RecognizerIntent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -27,8 +28,8 @@ import java.util.Locale;
 
 public class ListActivity extends AppCompatActivity {
 
-    private final int REQUEST_CODE_SPEECH_INPUT = 100;
-    private final int REQUEST_CODE_EDIT_ITEM = 200;
+    private final int REQUEST_CODE_SPEECH_INPUT = 201;
+    private final int REQUEST_CODE_EDIT_ITEM = 202;
 
     private ShoppingList shoppingList;
     private int shoppingListIndexInListList;
@@ -62,6 +63,11 @@ public class ListActivity extends AppCompatActivity {
         actionBar = getSupportActionBar();
         // Enable the Up button
         actionBar.setDisplayHomeAsUpEnabled(true);
+
+        if (savedInstanceState != null){
+            shoppingListIndexInListList = savedInstanceState.getInt("shoppingListIndexInListList");
+            shoppingList = CurrentState.getInstance().listList.get(shoppingListIndexInListList);
+        }
 
         //Receiving intent with index of the current list
         shoppingListIndexInListList = getIntent().getIntExtra("shoppingListIndexInListList", -1);
@@ -297,5 +303,11 @@ public class ListActivity extends AppCompatActivity {
 
     public void moveSelectedItem(boolean isSelectedItemInItemList, int positionInSectionList){
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        outState.putInt("shoppingListIndexInListList", shoppingListIndexInListList);
+        super.onSaveInstanceState(outState, outPersistentState);
     }
 }

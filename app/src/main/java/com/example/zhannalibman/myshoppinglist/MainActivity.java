@@ -23,11 +23,11 @@ import java.util.List;
  * Represents the list of all shopping lists.
  * */
 public class MainActivity extends AppCompatActivity {
-    public static final int REQUEST_CODE_LIST_ACTIVITY = 14;
+    public static final int REQUEST_CODE_LIST_ACTIVITY = 101;
     List<ShoppingList> listList = CurrentState.getInstance().listList;
 
-    EditText activity_main_enterListName;
-    ListView activity_main_listOfLists;
+    EditText enterListName;
+    ListView listOfLists;
     ActionBar actionBar;
     ActionMode.Callback actionModeCallback;
     ActionMode actionMode;
@@ -41,9 +41,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        activity_main_enterListName = (EditText) findViewById(R.id.activity_main_enterListName);
-        activity_main_listOfLists = (ListView)findViewById(R.id.activity_main_listOfLists);
-        activity_main_enterListName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        enterListName = (EditText) findViewById(R.id.enterListName);
+        listOfLists = (ListView)findViewById(R.id.listOfLists);
+        enterListName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 checkAndAdd();
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         actionBar.setIcon(R.mipmap.ic_launcher);
 
         listArrayAdapter = new ShoppingListsAdapter(this,listList);
-        activity_main_listOfLists.setAdapter(listArrayAdapter);
+        listOfLists.setAdapter(listArrayAdapter);
         createActionMode();
 
 
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void checkAndAdd(){
-        enteredListName = activity_main_enterListName.getText().toString();
+        enteredListName = enterListName.getText().toString();
         if (enteredListName.isEmpty()) {
             enteredListName = getString(R.string.unnamed_list);
         }
@@ -85,8 +85,8 @@ public class MainActivity extends AppCompatActivity {
             createNewList(enteredListName);
             //InputMethodManager imm = (InputMethodManager)view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             //imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            activity_main_enterListName.setText("");
-            activity_main_enterListName.setHint(getString(R.string.enterListName_hint));
+            enterListName.setText("");
+            enterListName.setHint(getString(R.string.enterListName_hint));
             ListActivity.startListActivity(this, 0);
 
     }
@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         alertDialogBuilder.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                activity_main_enterListName.requestFocus();
+                enterListName.requestFocus();
             }
         });
 
