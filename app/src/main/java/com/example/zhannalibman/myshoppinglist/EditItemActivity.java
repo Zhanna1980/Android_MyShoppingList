@@ -64,18 +64,19 @@ public class EditItemActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("");
 
-
-
         //Receiving intent
-        int shoppingListIndexInListList = getIntent().getIntExtra("shoppingListIndexInListList", -1);
-        boolean isSelectedItemInItemList = getIntent().getBooleanExtra("isSelectedItemInItemList", false);
-        int positionInSectionList = getIntent().getIntExtra("positionInSectionList", -1);
+        itemPosition = (ItemPosition)getIntent().getSerializableExtra("itemPosition");
+        int shoppingListIndexInListList = itemPosition.shoppingListIndexInListList;
+        boolean isSelectedItemInItemList = itemPosition.isSelectedItemInItemList;
+        int positionInSectionList = itemPosition.positionInSectionList;
 
         if (savedInstanceState != null){
             Log.d("Zhanna", "restoring state");
             shoppingListIndexInListList = savedInstanceState.getInt("shoppingListIndexInListList");
             isSelectedItemInItemList = savedInstanceState.getBoolean("isSelectedItemInItemList");
             positionInSectionList = savedInstanceState.getInt("positionInSectionList");
+            itemPosition = new ItemPosition(shoppingListIndexInListList,
+                    isSelectedItemInItemList, positionInSectionList);
 //            outputFileUri = Uri.parse(savedInstanceState.getString("outputFileUri"));
             String itemImageFileAsString = savedInstanceState.getString("itemImageFile");
             if (itemImageFileAsString != null) {
@@ -83,8 +84,7 @@ public class EditItemActivity extends AppCompatActivity {
             }
         }
 
-        itemPosition = new ItemPosition(shoppingListIndexInListList,
-                isSelectedItemInItemList, positionInSectionList);
+
         editedItem = itemPosition.getItem();
         if (editedItem != null){
             Log.d("Zhanna", editedItem.getName());
@@ -239,42 +239,5 @@ public class EditItemActivity extends AppCompatActivity {
         savedInstanceState.putBoolean("isSelectedItemInItemList", itemPosition.isSelectedItemInItemList);
         savedInstanceState.putInt("positionInSectionList", itemPosition.positionInSectionList);
         super.onSaveInstanceState(savedInstanceState);
-
-    }
-
-    /**
-     * Class for preserving the location and restoring of edited item
-     * */
-    private class ItemPosition {
-        int shoppingListIndexInListList;
-        boolean isSelectedItemInItemList;
-        int positionInSectionList;
-
-        ItemPosition(int shoppingListIndexInListList, boolean isSelectedItemInItemList, int positionInSectionList){
-            this.shoppingListIndexInListList = shoppingListIndexInListList;
-            this.isSelectedItemInItemList = isSelectedItemInItemList;
-            this.positionInSectionList = positionInSectionList;
-        }
-
-        Item getItem(){
-            if (shoppingListIndexInListList > -1 && shoppingListIndexInListList < CurrentState.getInstance().listList.size()
-                    && positionInSectionList > -1) {
-                Log.d("Zhanna", Integer.valueOf(shoppingListIndexInListList).toString() +
-                        Boolean.valueOf(isSelectedItemInItemList).toString() + Integer.valueOf(positionInSectionList).toString());
-                ShoppingList shoppingList = CurrentState.getInstance().listList.get(shoppingListIndexInListList);
-                if (isSelectedItemInItemList && positionInSectionList < shoppingList.itemList.size()){
-                    return shoppingList.itemList.get(positionInSectionList);
-                }
-                else if (!isSelectedItemInItemList && positionInSectionList < shoppingList.inCart.size()){
-                    return shoppingList.inCart.get(positionInSectionList);
-                }
-                else{
-                    return null;
-                }
-            }
-            else{
-                return null;
-            }
-        }
     }
 }

@@ -290,10 +290,11 @@ public class ListActivity extends AppCompatActivity {
     }
 
     public void editSelectedItem(boolean isSelectedItemInItemList, int positionInSectionList){
+        ItemPosition itemPosition = new ItemPosition(shoppingListIndexInListList, isSelectedItemInItemList, positionInSectionList);
         Intent intent = new Intent(this, EditItemActivity.class);
-        intent.putExtra("shoppingListIndexInListList", shoppingListIndexInListList);
-        intent.putExtra("isSelectedItemInItemList", isSelectedItemInItemList);
-        intent.putExtra("positionInSectionList", positionInSectionList);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("itemPosition", itemPosition);
+        intent.putExtras(bundle);
         startActivityForResult(intent, REQUEST_CODE_EDIT_ITEM);
     }
 
