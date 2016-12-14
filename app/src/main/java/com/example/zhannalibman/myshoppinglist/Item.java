@@ -11,7 +11,7 @@ public class Item {
     private float quantity;
     private String category;
     private String notes;
-
+    private String itemImageFilePath;
     private int previousPositionInItemList = 0;
 
     public Item(String name) {
@@ -72,6 +72,13 @@ public class Item {
         if (notes != null && !notes.isEmpty()) {
             this.notes = notes;
         }
+    }
+    public String getItemImageFilePath() {
+        return itemImageFilePath;
+    }
+
+    public void setItemImageFilePath(String itemImageFileName) {
+        this.itemImageFilePath = itemImageFileName;
     }
 
     public String itemQuantityToString(){

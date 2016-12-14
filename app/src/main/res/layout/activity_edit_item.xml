@@ -82,7 +82,6 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/enterCategory"
         android:background="@color/colorPrimary"
         android:id="@+id/lblNotes"
         android:text="@string/notes"
@@ -92,7 +91,6 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:id="@+id/enterNotes"
-        android:layout_below="@id/lblNotes"
         android:background="@color/colorLightGreen"
         android:layout_marginTop="10dp"/>
     <LinearLayout

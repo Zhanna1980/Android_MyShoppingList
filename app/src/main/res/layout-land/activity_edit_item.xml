@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:layout_marginBottom="10dp">
+
+    <LinearLayout
+        android:id="@+id/textLayout"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/editItemName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent" />
+
+        <LinearLayout
+            android:id="@+id/quantityLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/lblQuantity"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                android:labelFor="@+id/enterQuantity"
+                android:text="@string/quantity" />
+
+            <EditText
+                android:id="@+id/enterQuantity"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/darker_gray"
+                android:inputType="numberDecimal" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/unitsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/lblUnits"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1"
+                android:background="@color/colorAccent"
+                android:labelFor="@+id/enterUnits"
+                android:text="@string/units" />
+
+            <AutoCompleteTextView
+                android:id="@+id/enterUnits"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@android:color/holo_blue_bright" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/categoryLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/lblCategory"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1"
+                android:background="@android:color/holo_red_dark"
+                android:labelFor="@+id/enterCategory"
+                android:text="@string/category" />
+
+            <EditText
+                android:id="@+id/enterCategory"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@android:color/holo_green_dark" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/lblNotes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@color/colorPrimary"
+            android:labelFor="@+id/enterNotes"
+            android:text="@string/notes" />
+
+        <EditText
+            android:id="@+id/enterNotes"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:background="@color/colorLightGreen" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/photoButtonsAndImageLayout"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_margin = "10dp"
+        android:layout_weight="1"
+        android:background="@android:color/holo_blue_bright"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/buttonsLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/holo_purple"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/btnTakePhoto"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:onClick="onBtnTakePhotoClick"
+                android:src="@drawable/ic_add_a_photo_black_24dp" />
+
+            <ImageButton
+                android:id="@+id/btnPickPhoto"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_photo_library_black_24dp" />
+
+            <ImageButton
+                android:id="@+id/btnDeletePhoto"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_delete_black_24dp" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/itemPhoto"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/holo_orange_light"
+            android:src="@drawable/ic_photo_black_24dp" />
+    </LinearLayout>
+
+</LinearLayout>

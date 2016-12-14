@@ -39,9 +39,8 @@ public class EditItemActivity extends AppCompatActivity {
 
     private Item editedItem;
     private ItemPosition itemPosition;
-    private Uri outputFileUri;
-    private File itemImageFile;
 
+    private String itemImageFilePath;
 
 
     @Override
@@ -77,11 +76,7 @@ public class EditItemActivity extends AppCompatActivity {
             positionInSectionList = savedInstanceState.getInt("positionInSectionList");
             itemPosition = new ItemPosition(shoppingListIndexInListList,
                     isSelectedItemInItemList, positionInSectionList);
-//            outputFileUri = Uri.parse(savedInstanceState.getString("outputFileUri"));
-            String itemImageFileAsString = savedInstanceState.getString("itemImageFile");
-            if (itemImageFileAsString != null) {
-                itemImageFile = new File(itemImageFileAsString);
-            }
+            itemImageFilePath = savedInstanceState.getString("itemImageFilePath");
         }
 
 
@@ -103,6 +98,9 @@ public class EditItemActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Fills the data of the edited item into views of the activity
+     * */
     private void fillData(){
         editItemName.setText(editedItem.getName());
         enterQuantity.setText(editedItem.itemQuantityToString());
@@ -111,12 +109,13 @@ public class EditItemActivity extends AppCompatActivity {
         if (editedItem.getNotes() != null) {
             enterNotes.setText(editedItem.getNotes());
         }
-        if (itemImageFile != null && itemImageFile.exists()){
-            Log.d("Zhanna", "Fill data photo");
-            File externalStorageDirectory = Environment.getExternalStorageDirectory();
-            File output = new File(externalStorageDirectory, itemImageFile.getName());
-            Bitmap bitmap = BitmapFactory.decodeFile(output.toString());
-            itemPhoto.setImageBitmap(bitmap);
+        //setImageFromFile();
+        if (itemImageFilePath != null && !itemImageFilePath.isEmpty()){
+            setItemImageToImageView(itemImageFilePath);
+        }
+        else if(editedItem.getItemImageFilePath() != null && !editedItem.getItemImageFilePath().isEmpty()){
+            itemImageFilePath = editedItem.getItemImageFilePath();
+            setItemImageToImageView(itemImageFilePath);
         }
     }
 
@@ -155,7 +154,7 @@ public class EditItemActivity extends AppCompatActivity {
     }
 
     /**
-     * Picking all the entered data
+     * Picking all the entered data after button Done has been clicked and saving it into the item's properties
      * */
     private void saveDataAfterEditing(){
         String changedName = editItemName.getText().toString();
@@ -182,17 +181,25 @@ public class EditItemActivity extends AppCompatActivity {
         if (!notes.isEmpty()){
             editedItem.setNotes(notes);
         }
+        if (itemImageFilePath != null && !itemImageFilePath.isEmpty()){
+            editedItem.setItemImageFilePath(itemImageFilePath);
+        }
     }
 
+    /**
+     * Capturing photo
+     * */
     public void onBtnTakePhotoClick(View view) {
         if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             // Ensure that there's a camera activity to handle the intent
             if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                 // Create the File where the photo should go
-                itemImageFile = new File(Environment.getExternalStorageDirectory(),
-                        (new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date())) +".jpg");
-                outputFileUri = Uri.fromFile(itemImageFile);
+                String itemImageFileName = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) +".jpg";
+                File itemImageFile = new File(Environment.getExternalStorageDirectory(),
+                        itemImageFileName);
+                Uri outputFileUri = Uri.fromFile(itemImageFile);
+                itemImageFilePath = outputFileUri.getPath().toString();
                 Log.d("Zhanna", "file saved in " + outputFileUri.toString());
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
@@ -211,30 +218,22 @@ public class EditItemActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
-            Log.d("Zhanna", "result ok");
-                if (data != null) {
-                    Log.d("Zhanna", "receiving data");
-                    Bundle extras = data.getExtras();
-                    Bitmap imageBitmap = (Bitmap) extras.get("data");
-                    itemPhoto.setImageBitmap(imageBitmap);
-                }
-            if(itemImageFile.exists()) {
-                Log.d("Zhanna", "file exists");
-                File externalStorageDirectory = Environment.getExternalStorageDirectory();
-                File output = new File(externalStorageDirectory, itemImageFile.getName());
-                Bitmap bitmap = BitmapFactory.decodeFile(output.toString());
-                itemPhoto.setImageBitmap(bitmap);
-            }
+            setItemImageToImageView(itemImageFilePath);
         }
+    }
 
+    private void setItemImageToImageView(String itemImageFilePath){
+        if (itemImageFilePath != null && !itemImageFilePath.isEmpty()){
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 10;
+            Bitmap bitmap = BitmapFactory.decodeFile(itemImageFilePath, options);
+            itemPhoto.setImageBitmap(bitmap);
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        //savedInstanceState.putString("outputFileUri", outputFileUri.toString());
-        if (itemImageFile != null) {
-            savedInstanceState.putString("itemImageFile", itemImageFile.toString());
-        }
+        savedInstanceState.putString("itemImageFilePath", itemImageFilePath);
         savedInstanceState.putInt("shoppingListIndexInListList", itemPosition.shoppingListIndexInListList);
         savedInstanceState.putBoolean("isSelectedItemInItemList", itemPosition.isSelectedItemInItemList);
         savedInstanceState.putInt("positionInSectionList", itemPosition.positionInSectionList);
