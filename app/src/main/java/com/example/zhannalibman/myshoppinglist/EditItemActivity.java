@@ -1,5 +1,6 @@
 package com.example.zhannalibman.myshoppinglist;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -8,6 +9,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -28,6 +31,11 @@ import static java.lang.Float.parseFloat;
 public class EditItemActivity extends AppCompatActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 301;
+    private final int REQUEST_EXTERNAL_STORAGE = 302;
+    private static String[] PERMISSIONS_STORAGE = {
+            //Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     private EditText editItemName;
     private EditText enterQuantity;
@@ -187,9 +195,15 @@ public class EditItemActivity extends AppCompatActivity {
     }
 
     /**
-     * Capturing photo
+     * Verifying Storage permission for devices with API 23+
      * */
     public void onBtnTakePhotoClick(View view) {
+        verifyStoragePermissions();
+
+
+    }
+
+    private void takePhoto(){
         if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             // Ensure that there's a camera activity to handle the intent
@@ -212,7 +226,6 @@ public class EditItemActivity extends AppCompatActivity {
         else{
             Toast.makeText(this, getString(R.string.no_camera), Toast.LENGTH_SHORT).show();
         }
-
     }
 
     @Override
@@ -238,5 +251,38 @@ public class EditItemActivity extends AppCompatActivity {
         savedInstanceState.putBoolean("isSelectedItemInItemList", itemPosition.isSelectedItemInItemList);
         savedInstanceState.putInt("positionInSectionList", itemPosition.positionInSectionList);
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    /**
+     * Checks if the app has permission to write to device storage
+     *
+     * If the app does not has permission then the user will be prompted to grant permissions
+     *
+     */
+    public void verifyStoragePermissions() {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    this,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_EXTERNAL_STORAGE){
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                takePhoto();
+            }
+            else{
+                Toast.makeText(this, getString(R.string.storage_permission_denied), Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }
