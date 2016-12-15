@@ -3,6 +3,7 @@ package com.example.zhannalibman.myshoppinglist;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -31,7 +32,8 @@ import static java.lang.Float.parseFloat;
 public class EditItemActivity extends AppCompatActivity {
 
     static final int REQUEST_IMAGE_CAPTURE = 301;
-    private final int REQUEST_EXTERNAL_STORAGE = 302;
+    static final int REQUEST_PICK_IMAGE = 302;
+    private final int REQUEST_EXTERNAL_STORAGE = 303;
     private static String[] PERMISSIONS_STORAGE = {
             //Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -177,21 +179,14 @@ public class EditItemActivity extends AppCompatActivity {
             Toast.makeText(this, getString(R.string.enterItemName_hint), Toast.LENGTH_SHORT).show();
             return;
         }
-        if (!changedQuantity.isEmpty()){
+        //TODO fix the bug java.lang.NumberFormatException: Invalid float: "19,9"
+        if (!changedQuantity.isEmpty()) {
             editedItem.setQuantity(parseFloat(changedQuantity));
         }
-        if (!changedUnits.isEmpty()){
-            editedItem.setUnit(changedUnits);
-        }
-        if (!changedCategory.isEmpty()){
-            editedItem.setCategory(changedCategory);
-        }
-        if (!notes.isEmpty()){
-            editedItem.setNotes(notes);
-        }
-        if (itemImageFilePath != null && !itemImageFilePath.isEmpty()){
-            editedItem.setItemImageFilePath(itemImageFilePath);
-        }
+        editedItem.setUnit(changedUnits);
+        editedItem.setCategory(changedCategory);
+        editedItem.setNotes(notes);
+        editedItem.setItemImageFilePath(itemImageFilePath);
     }
 
     /**
@@ -199,7 +194,6 @@ public class EditItemActivity extends AppCompatActivity {
      * */
     public void onBtnTakePhotoClick(View view) {
         verifyStoragePermissions();
-
 
     }
 
@@ -212,6 +206,8 @@ public class EditItemActivity extends AppCompatActivity {
                 String itemImageFileName = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) +".jpg";
                 File itemImageFile = new File(Environment.getExternalStorageDirectory(),
                         itemImageFileName);
+//                File itemImageFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+//                        itemImageFileName);
                 Uri outputFileUri = Uri.fromFile(itemImageFile);
                 itemImageFilePath = outputFileUri.getPath().toString();
                 Log.d("Zhanna", "file saved in " + outputFileUri.toString());
@@ -233,10 +229,27 @@ public class EditItemActivity extends AppCompatActivity {
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
             setItemImageToImageView(itemImageFilePath);
         }
+        else if(requestCode == REQUEST_PICK_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null){
+            Uri URI = data.getData();
+            String[] FILE = { MediaStore.Images.Media.DATA };
+            Cursor cursor = getContentResolver().query(URI,
+                    FILE, null, null, null);
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(FILE[0]);
+            itemImageFilePath = cursor.getString(columnIndex);
+            cursor.close();
+            setItemImageToImageView(itemImageFilePath);
+
+        }
     }
 
+    //TODO 1.Decoding bitmap not in main thread.
+    // TODO 2.Calculating sample size of an image.
+    // TODO 3.Solve "rotation problem".
+    //TODO 4.Add taken photos to the photo roll in the Gallery
     private void setItemImageToImageView(String itemImageFilePath){
         if (itemImageFilePath != null && !itemImageFilePath.isEmpty()){
+
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 10;
             Bitmap bitmap = BitmapFactory.decodeFile(itemImageFilePath, options);
@@ -271,6 +284,9 @@ public class EditItemActivity extends AppCompatActivity {
                     REQUEST_EXTERNAL_STORAGE
             );
         }
+        else{
+            takePhoto();
+        }
     }
 
 
@@ -284,5 +300,23 @@ public class EditItemActivity extends AppCompatActivity {
                 Toast.makeText(this, getString(R.string.storage_permission_denied), Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    public void onBtnPickPhotoClick(View view) {
+        // Create intent to Open Image applications like Gallery, Google Photos
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        // Start the Intent
+        startActivityForResult(galleryIntent, REQUEST_PICK_IMAGE);
+
+//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+//        intent.setType("image/*");
+//        startActivityForResult(intent, REQUEST_PICK_IMAGE);
+
+    }
+
+    public void onBtnDeletePhotoClick(View view) {
+        itemPhoto.setImageBitmap(null);
+        itemImageFilePath = null;
     }
 }

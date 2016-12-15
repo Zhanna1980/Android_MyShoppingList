@@ -117,12 +117,14 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/ic_photo_library_black_24dp"
-                android:id="@+id/btnPickPhoto"/>
+                android:id="@+id/btnPickPhoto"
+                android:onClick="onBtnPickPhotoClick"/>
             <ImageButton
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/ic_delete_black_24dp"
-                android:id="@+id/btnDeletePhoto"/>
+                android:id="@+id/btnDeletePhoto"
+                android:onClick="onBtnDeletePhotoClick"/>
         </LinearLayout>
         <ImageView
             android:layout_width="0dp"

@@ -59,9 +59,7 @@ public class Item {
     }
 
     public void setCategory(String category) {
-        if ( category != null && !category.isEmpty()) {
-            this.category = category;
-        }
+        this.category = category;
     }
 
     public String getNotes() {
@@ -69,9 +67,8 @@ public class Item {
     }
 
     public void setNotes(String notes) {
-        if (notes != null && !notes.isEmpty()) {
-            this.notes = notes;
-        }
+        this.notes = notes;
+
     }
     public String getItemImageFilePath() {
         return itemImageFilePath;
