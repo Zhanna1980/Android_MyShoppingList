@@ -80,7 +80,9 @@ public class Item {
     }
 
     public String itemQuantityToString(){
-        return NumberFormat.getNumberInstance(Locale.US).format(quantity);
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+        nf.setMaximumFractionDigits(2);
+        return nf.format(quantity);
     }
 
     public String itemQuantityAndUnitsToString(){
