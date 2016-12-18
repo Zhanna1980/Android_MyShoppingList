@@ -1,6 +1,7 @@
 package com.example.zhannalibman.myshoppinglist;
 
-import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * Created by zhannalibman on 06/07/16.
@@ -16,7 +17,7 @@ public class Item {
 
     public Item(String name) {
         this.name = name;
-        this.quantity = 1;
+        this.quantity = 1f;
         this.unit = "";
     }
 
@@ -39,7 +40,7 @@ public class Item {
     }
 
     public void setQuantity(float quantity) {
-        if (quantity >= 0) {
+        if (quantity > 0) {
             this.quantity = quantity;
         }
     }
@@ -79,7 +80,7 @@ public class Item {
     }
 
     public String itemQuantityToString(){
-        return new DecimalFormat("#.##").format(quantity);
+        return NumberFormat.getNumberInstance(Locale.US).format(quantity);
     }
 
     public String itemQuantityAndUnitsToString(){

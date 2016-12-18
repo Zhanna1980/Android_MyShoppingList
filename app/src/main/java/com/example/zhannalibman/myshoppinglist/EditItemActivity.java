@@ -24,10 +24,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import static java.lang.Float.parseFloat;
+import java.util.Locale;
 
 public class EditItemActivity extends AppCompatActivity {
 
@@ -179,9 +180,16 @@ public class EditItemActivity extends AppCompatActivity {
             Toast.makeText(this, getString(R.string.enterItemName_hint), Toast.LENGTH_SHORT).show();
             return;
         }
-        //TODO fix the bug java.lang.NumberFormatException: Invalid float: "19,9"
         if (!changedQuantity.isEmpty()) {
-            editedItem.setQuantity(parseFloat(changedQuantity));
+            float quantity = 0f;
+            NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+            nf.setMaximumFractionDigits(2);
+            try {
+                quantity = nf.parse(changedQuantity).floatValue();
+            } catch (ParseException e) {
+                Toast.makeText(this, getString(R.string.parse_quantity_error), Toast.LENGTH_SHORT).show();
+            }
+            editedItem.setQuantity(quantity);
         }
         editedItem.setUnit(changedUnits);
         editedItem.setCategory(changedCategory);
@@ -239,7 +247,6 @@ public class EditItemActivity extends AppCompatActivity {
             itemImageFilePath = cursor.getString(columnIndex);
             cursor.close();
             setItemImageToImageView(itemImageFilePath);
-
         }
     }
 
