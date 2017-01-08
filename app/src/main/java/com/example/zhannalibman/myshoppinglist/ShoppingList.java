@@ -30,22 +30,45 @@ public class ShoppingList {
         this.name = name;
     }
 
+    /**
+     * Returns the date of list creation as String
+     * */
     public String getDate() {
         return new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(date);
     }
 
-    public void setNewDate() {
-        this.date = new Date(System.currentTimeMillis());
-    }
 
     @Override
     public String toString() {
+        return name + " (" + getDate() +")";
+    }
+
+    /**
+     * Represents the list with its items in itemList as one String.
+     * */
+    public String getListFullDescription(){
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(name + System.lineSeparator());
         for (Item item :itemList){
             stringBuilder.append(item.toString() + System.lineSeparator());
         }
-        String listAsString = stringBuilder.toString();
-        return listAsString;
+        return stringBuilder.toString();
+    }
+
+    /**
+     * Checks if the list contains the item with specified name
+     **/
+    public boolean containsItem (String itemName){
+        for ( int i = 0; i < itemList.size(); i++) {
+            if (itemList.get(i).getName().equals(itemName)){
+                return true;
+            }
+        }
+        for (int i = 0; i < inCart.size(); i++){
+            if (inCart.get(i).getName().equals(itemName)){
+                return true;
+            }
+        }
+        return false;
     }
 }

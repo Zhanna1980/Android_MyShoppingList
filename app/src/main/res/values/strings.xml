@@ -33,4 +33,5 @@
     <string name="no_camera">Camera is not available</string>
     <string name="storage_permission_denied">Taking pictures needs permission to write to external storage</string>
     <string name="parse_quantity_error">Invalid quantity</string>
+    <string name="to">to</string>
 </resources>

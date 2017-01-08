@@ -1,6 +1,7 @@
 package com.example.zhannalibman.myshoppinglist;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -26,7 +27,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends AppCompatActivity implements MoveCopyDialogFragment.OnFinishMoveCopyDialogListener {
 
     private final int REQUEST_CODE_SPEECH_INPUT = 201;
     private final int REQUEST_CODE_EDIT_ITEM = 202;
@@ -128,7 +129,7 @@ public class ListActivity extends AppCompatActivity {
     public void addItemToListIfDoesNotExist(){
         String enteredItemName = enterItemName.getText().toString();
         if (!enteredItemName.isEmpty()) {
-            if (isAlreadyInTheList(enteredItemName)) {
+            if (shoppingList.containsItem(enteredItemName)) {
                 Toast.makeText(ListActivity.this, getString(R.string.already_in_list), Toast.LENGTH_SHORT).show();
             } else {
                 addItemToList(enteredItemName);
@@ -138,19 +139,9 @@ public class ListActivity extends AppCompatActivity {
                 if (autoCompleteUnitsAdapter.getPosition(enteredItemName) < 0) {
                     autoCompleteUnitsAdapter.add(enteredItemName);
                     usedItems.add(enteredItemName);
-                    //Toast.makeText(this, Integer.toString(CurrentState.getInstance().usedItemsNames.size()), Toast.LENGTH_SHORT).show();
                }
             }
         }
-    }
-
-    public boolean isAlreadyInTheList (String enteredItemName){
-        for ( int i = 0; i < shoppingList.itemList.size(); i++) {
-            if (shoppingList.itemList.get(i).getName().equals(enteredItemName)){
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -256,11 +247,11 @@ public class ListActivity extends AppCompatActivity {
                         mode.finish();
                         return true;
                     case R.id.move:
-                        moveSelectedItem(isSelectedItemInItemList,positionInSectionList);
+                        showMoveCopyDialogFragment(false, shoppingListIndexInListList, isSelectedItemInItemList,positionInSectionList);
                         mode.finish();
                         return true;
                     case R.id.copy:
-                        copySelectedItem(isSelectedItemInItemList,positionInSectionList);
+                        showMoveCopyDialogFragment(true, shoppingListIndexInListList, isSelectedItemInItemList,positionInSectionList);
                         mode.finish();
                         return  true;
                     default:
@@ -298,17 +289,31 @@ public class ListActivity extends AppCompatActivity {
         startActivityForResult(intent, REQUEST_CODE_EDIT_ITEM);
     }
 
-    public void copySelectedItem(boolean isSelectedItemInItemList, int positionInSectionList){
 
-    }
-
-    public void moveSelectedItem(boolean isSelectedItemInItemList, int positionInSectionList){
-
+    public void showMoveCopyDialogFragment(boolean shouldCopyItem, int shoppingListIndexInListList,
+                                           boolean isSelectedItemInItemList, int positionInSectionList){
+        ItemPosition itemPosition = new ItemPosition(shoppingListIndexInListList, isSelectedItemInItemList, positionInSectionList);
+        FragmentManager fragmentManager = getFragmentManager();
+        MoveCopyDialogFragment moveCopyDialogFragment = new MoveCopyDialogFragment();
+        moveCopyDialogFragment.setCancelable(true);
+        Bundle args = new Bundle();
+        args.putBoolean("shouldCopyItem", shouldCopyItem);
+        args.putSerializable("itemPosition", itemPosition);
+        moveCopyDialogFragment.setArguments(args);
+        moveCopyDialogFragment.setOnFinishMoveCopyDialogListener(this);
+        moveCopyDialogFragment.show(fragmentManager, "moveCopyDialogFragment");
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         outState.putInt("shoppingListIndexInListList", shoppingListIndexInListList);
         super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    public void onFinishMoveCopyItem(boolean isItemCopied) {
+        if (!isItemCopied) {
+            itemsInListAdapter.notifyDataSetChanged();
+        }
     }
 }

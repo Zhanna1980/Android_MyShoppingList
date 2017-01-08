@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -52,6 +53,9 @@ public class EditItemActivity extends AppCompatActivity {
     private ItemPosition itemPosition;
 
     private String itemImageFilePath;
+    private boolean shouldTakePhoto = false;
+    int itemImageWidth = 100;
+    int itemImageHeight = 100;
 
 
     @Override
@@ -88,6 +92,9 @@ public class EditItemActivity extends AppCompatActivity {
             itemPosition = new ItemPosition(shoppingListIndexInListList,
                     isSelectedItemInItemList, positionInSectionList);
             itemImageFilePath = savedInstanceState.getString("itemImageFilePath");
+            itemImageWidth = savedInstanceState.getInt("itemImageWidth", 100);
+            itemImageHeight = savedInstanceState.getInt("itemImageHeight", 100);
+            shouldTakePhoto = savedInstanceState.getBoolean("shouldTakePhoto");
         }
 
 
@@ -201,7 +208,8 @@ public class EditItemActivity extends AppCompatActivity {
      * Verifying Storage permission for devices with API 23+
      * */
     public void onBtnTakePhotoClick(View view) {
-        verifyStoragePermissions();
+        shouldTakePhoto = true;
+        verifyStoragePermissions(shouldTakePhoto);
 
     }
 
@@ -245,8 +253,9 @@ public class EditItemActivity extends AppCompatActivity {
             cursor.moveToFirst();
             int columnIndex = cursor.getColumnIndex(FILE[0]);
             itemImageFilePath = cursor.getString(columnIndex);
-            cursor.close();
+
             setItemImageToImageView(itemImageFilePath);
+            cursor.close();
         }
     }
 
@@ -255,12 +264,37 @@ public class EditItemActivity extends AppCompatActivity {
     // TODO 3.Solve "rotation problem".
     //TODO 4.Add taken photos to the photo roll in the Gallery
     private void setItemImageToImageView(String itemImageFilePath){
-        if (itemImageFilePath != null && !itemImageFilePath.isEmpty()){
+        if (itemImageFilePath != null && !itemImageFilePath.isEmpty()) {
+            // Get the dimensions of the imageView
+            itemImageWidth = itemPhoto.getWidth();
+            itemImageHeight = itemPhoto.getHeight();
 
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 10;
-            Bitmap bitmap = BitmapFactory.decodeFile(itemImageFilePath, options);
-            itemPhoto.setImageBitmap(bitmap);
+            new AsyncTask<String, Void, Bitmap>() {
+                @Override
+                protected Bitmap doInBackground(String... params) {
+                    String itemImageFilePath = params[0];
+
+                    // Get the dimensions of the bitmap
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inJustDecodeBounds = true;
+                    BitmapFactory.decodeFile(itemImageFilePath, options);
+                    int photoWidth = options.outWidth;
+                    int photoHeight = options.outHeight;
+                    // Determine how much to scale down the image
+                    int scaleFactor = Math.min(photoWidth/itemImageWidth, photoHeight/itemImageHeight);
+                    // Decode the image file into a Bitmap sized to fill the View
+                    options.inJustDecodeBounds = false;
+                    options.inSampleSize = scaleFactor;
+                    //options.inSampleSize=10;
+                    Log.d("Zhanna", String.valueOf(scaleFactor));
+                    Bitmap bitmap = BitmapFactory.decodeFile(itemImageFilePath, options);
+                    return bitmap;
+                }
+                @Override
+                protected void onPostExecute(Bitmap bitmap) {
+                    itemPhoto.setImageBitmap(bitmap);
+                }
+            }.execute(itemImageFilePath);
         }
     }
 
@@ -270,6 +304,9 @@ public class EditItemActivity extends AppCompatActivity {
         savedInstanceState.putInt("shoppingListIndexInListList", itemPosition.shoppingListIndexInListList);
         savedInstanceState.putBoolean("isSelectedItemInItemList", itemPosition.isSelectedItemInItemList);
         savedInstanceState.putInt("positionInSectionList", itemPosition.positionInSectionList);
+        savedInstanceState.putInt("itemImageWidth", itemImageWidth);
+        savedInstanceState.putInt("itemImageHeight", itemImageHeight);
+        savedInstanceState.putBoolean("shouldTakePhoto", shouldTakePhoto);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -279,7 +316,7 @@ public class EditItemActivity extends AppCompatActivity {
      * If the app does not has permission then the user will be prompted to grant permissions
      *
      */
-    public void verifyStoragePermissions() {
+    public void verifyStoragePermissions(boolean shouldTakePhoto) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
@@ -292,7 +329,12 @@ public class EditItemActivity extends AppCompatActivity {
             );
         }
         else{
-            takePhoto();
+            if(shouldTakePhoto) {
+                takePhoto();
+            }
+            else{
+                pickPhoto();
+            }
         }
     }
 
@@ -301,7 +343,12 @@ public class EditItemActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_EXTERNAL_STORAGE){
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                takePhoto();
+                if (shouldTakePhoto == true) {
+                    takePhoto();
+                }
+                else{
+                    pickPhoto();
+                }
             }
             else{
                 Toast.makeText(this, getString(R.string.storage_permission_denied), Toast.LENGTH_LONG).show();
@@ -310,16 +357,16 @@ public class EditItemActivity extends AppCompatActivity {
     }
 
     public void onBtnPickPhotoClick(View view) {
+        shouldTakePhoto = false;
+        verifyStoragePermissions(shouldTakePhoto);
+    }
+
+    public void pickPhoto(){
         // Create intent to Open Image applications like Gallery, Google Photos
         Intent galleryIntent = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         // Start the Intent
         startActivityForResult(galleryIntent, REQUEST_PICK_IMAGE);
-
-//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//        intent.setType("image/*");
-//        startActivityForResult(intent, REQUEST_PICK_IMAGE);
-
     }
 
     public void onBtnDeletePhotoClick(View view) {

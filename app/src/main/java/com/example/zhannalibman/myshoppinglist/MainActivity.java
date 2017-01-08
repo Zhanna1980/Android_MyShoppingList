@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_SUBJECT, listList.get(positionInListList).getName());
-        intent.putExtra(Intent.EXTRA_TEXT, listList.get(positionInListList).toString());
+        intent.putExtra(Intent.EXTRA_TEXT, listList.get(positionInListList).getListFullDescription());
         //Verifies there is an app to receive the intent
         PackageManager packageManager = getPackageManager();
         List activities = packageManager.queryIntentActivities(intent,
