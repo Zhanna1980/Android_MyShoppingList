@@ -37,56 +37,49 @@ public class MoveCopyDialogFragment extends DialogFragment {
         ListView moveCopyToList = (ListView) view.findViewById(R.id.moveCopyToList);
         shouldCopyItem = getArguments().getBoolean("shouldCopyItem");
         itemPosition = (ItemPosition) getArguments().getSerializable("itemPosition");
-        if(itemPosition != null){
-            final Item item = itemPosition.getItem();
-            final ShoppingList currentList = CurrentState.getInstance().listList.get(itemPosition.shoppingListIndexInListList);
-            String copyOrMove = shouldCopyItem ? getString(R.string.copy) : getString(R.string.move);
-            String title = copyOrMove + " " + item.getName() + " " + getString(R.string.to);
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(title).setView(view);
-            final List<ShoppingList> listForDisplayingInDialog = getListForDisplayingInDialog(itemPosition.shoppingListIndexInListList);
-            ArrayAdapter<ShoppingList> moveCopyToListAdapter =
-                    new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,
-                            listForDisplayingInDialog);
-            moveCopyToList.setAdapter(moveCopyToListAdapter);
-            moveCopyToList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                                      @Override
-                                                      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                                          ShoppingList destinationList = listForDisplayingInDialog.get(position);
-                                                          if (!destinationList.containsItem(item.getName())) {
-                                                              destinationList.itemList.add(0, item);
-                                                              if (!shouldCopyItem) {
-                                                                  if (itemPosition.isSelectedItemInItemList){
-                                                                      currentList.itemList.remove(itemPosition.positionInSectionList);
-                                                                  }
-                                                                  else{
-                                                                     currentList.inCart.remove(itemPosition.positionInSectionList);
-                                                                  }
+        final Item item = itemPosition.getItem();
+        final ShoppingList currentList = CurrentState.getInstance().listList.get(itemPosition.shoppingListIndexInListList);
+        String copyOrMove = shouldCopyItem ? getString(R.string.copy) : getString(R.string.move);
+        String title = copyOrMove + " " + item.getName() + " " + getString(R.string.to);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(title).setView(view);
+        final List<ShoppingList> listForDisplayingInDialog = getListForDisplayingInDialog(itemPosition.shoppingListIndexInListList);
+        ArrayAdapter<ShoppingList> moveCopyToListAdapter =
+                new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1,
+                        listForDisplayingInDialog);
+        moveCopyToList.setAdapter(moveCopyToListAdapter);
+        moveCopyToList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                                  @Override
+                                                  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                      ShoppingList destinationList = listForDisplayingInDialog.get(position);
+                                                      if (!destinationList.containsItem(item.getName())) {
+                                                          destinationList.itemList.add(0, item);
+                                                          if (!shouldCopyItem) {
+                                                              if (itemPosition.isSelectedItemInItemList) {
+                                                                  currentList.itemList.remove(itemPosition.positionInSectionList);
+                                                              } else {
+                                                                  currentList.inCart.remove(itemPosition.positionInSectionList);
                                                               }
-                                                              doneMoveCopyItem(shouldCopyItem);
                                                           }
-                                                          else{
-                                                              Toast.makeText(getActivity(), getString(R.string.already_in_list), Toast.LENGTH_SHORT).show();
-                                                              dismiss();
-                                                          }
+                                                          doneMoveCopyItem(shouldCopyItem);
+                                                      } else {
+                                                          Toast.makeText(getActivity(), getString(R.string.already_in_list), Toast.LENGTH_SHORT).show();
+                                                          dismiss();
                                                       }
                                                   }
-            );
-            return builder.create();
-        }else{
-            Toast.makeText(getActivity(), getString(R.string.error), Toast.LENGTH_SHORT).show();
-            return null;
-        }
+                                              }
+        );
+        return builder.create();
     }
 
     /**
      * Returns the list without the current list with item that is being moved or copied
-     * */
-    private List<ShoppingList> getListForDisplayingInDialog(int currentListIndex){
+     */
+    private List<ShoppingList> getListForDisplayingInDialog(int currentListIndex) {
         List<ShoppingList> listForDisplayingInDialog = new LinkedList<>();
         List<ShoppingList> listList = CurrentState.getInstance().listList;
-        for (int i = 0; i < listList.size(); i++){
-            if (i != currentListIndex){
+        for (int i = 0; i < listList.size(); i++) {
+            if (i != currentListIndex) {
                 listForDisplayingInDialog.add(listList.get(i));
             }
         }
@@ -94,7 +87,7 @@ public class MoveCopyDialogFragment extends DialogFragment {
     }
 
     private void doneMoveCopyItem(boolean shouldCopyItem) {
-        if(onFinishMoveCopyDialogListener != null)
+        if (onFinishMoveCopyDialogListener != null)
             onFinishMoveCopyDialogListener.onFinishMoveCopyItem(shouldCopyItem);
         dismiss();
     }

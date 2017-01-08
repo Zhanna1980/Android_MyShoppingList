@@ -292,16 +292,21 @@ public class ListActivity extends AppCompatActivity implements MoveCopyDialogFra
 
     public void showMoveCopyDialogFragment(boolean shouldCopyItem, int shoppingListIndexInListList,
                                            boolean isSelectedItemInItemList, int positionInSectionList){
-        ItemPosition itemPosition = new ItemPosition(shoppingListIndexInListList, isSelectedItemInItemList, positionInSectionList);
-        FragmentManager fragmentManager = getFragmentManager();
-        MoveCopyDialogFragment moveCopyDialogFragment = new MoveCopyDialogFragment();
-        moveCopyDialogFragment.setCancelable(true);
-        Bundle args = new Bundle();
-        args.putBoolean("shouldCopyItem", shouldCopyItem);
-        args.putSerializable("itemPosition", itemPosition);
-        moveCopyDialogFragment.setArguments(args);
-        moveCopyDialogFragment.setOnFinishMoveCopyDialogListener(this);
-        moveCopyDialogFragment.show(fragmentManager, "moveCopyDialogFragment");
+        if (CurrentState.getInstance().listList.size() > 1) {
+            ItemPosition itemPosition = new ItemPosition(shoppingListIndexInListList, isSelectedItemInItemList, positionInSectionList);
+            FragmentManager fragmentManager = getFragmentManager();
+            MoveCopyDialogFragment moveCopyDialogFragment = new MoveCopyDialogFragment();
+            moveCopyDialogFragment.setCancelable(true);
+            Bundle args = new Bundle();
+            args.putBoolean("shouldCopyItem", shouldCopyItem);
+            args.putSerializable("itemPosition", itemPosition);
+            moveCopyDialogFragment.setArguments(args);
+            moveCopyDialogFragment.setOnFinishMoveCopyDialogListener(this);
+            moveCopyDialogFragment.show(fragmentManager, "moveCopyDialogFragment");
+        }
+        else{
+            Toast.makeText(this, R.string.no_lists_for_move_copy, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
