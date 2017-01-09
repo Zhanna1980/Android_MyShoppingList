@@ -43,7 +43,7 @@ public class ListActivity extends AppCompatActivity implements MoveCopyDialogFra
 
     private ItemsInListAdapter itemsInListAdapter;
     private ArrayList<String> usedItems;
-    private ArrayAdapter<String> autoCompleteUnitsAdapter;
+    private ArrayAdapter<String> autoCompleteUsedItemsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +77,8 @@ public class ListActivity extends AppCompatActivity implements MoveCopyDialogFra
             actionBar.setTitle(shoppingList.getName());
             //autocomplete
             usedItems = CurrentState.getInstance().usedItemsNames;
-            autoCompleteUnitsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, usedItems);
-            enterItemName.setAdapter(autoCompleteUnitsAdapter);
+            autoCompleteUsedItemsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, usedItems);
+            enterItemName.setAdapter(autoCompleteUsedItemsAdapter);
             enterItemName.setThreshold(1);
             //setting adapter for the listView
             itemsInListAdapter = new ItemsInListAdapter(this, shoppingList.itemList, shoppingList.inCart);
@@ -136,8 +136,8 @@ public class ListActivity extends AppCompatActivity implements MoveCopyDialogFra
                 enterItemName.setText("");
                 enterItemName.setHint(getString(R.string.enterItemName_hint));
                 enterItemName.requestFocus();
-                if (autoCompleteUnitsAdapter.getPosition(enteredItemName) < 0) {
-                    autoCompleteUnitsAdapter.add(enteredItemName);
+                if (autoCompleteUsedItemsAdapter.getPosition(enteredItemName) < 0) {
+                    autoCompleteUsedItemsAdapter.add(enteredItemName);
                     usedItems.add(enteredItemName);
                }
             }

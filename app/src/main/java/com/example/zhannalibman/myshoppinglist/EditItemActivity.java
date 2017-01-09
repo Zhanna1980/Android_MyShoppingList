@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,6 +29,8 @@ import java.io.File;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 
@@ -54,8 +57,11 @@ public class EditItemActivity extends AppCompatActivity {
 
     private String itemImageFilePath;
     private boolean shouldTakePhoto = false;
-    int itemImageWidth = 100;
-    int itemImageHeight = 100;
+    private int itemImageWidth = 100;
+    private int itemImageHeight = 100;
+    private ArrayList<String> units = new ArrayList<>();
+    private ArrayList<String> predefinedUnits = new ArrayList<>();
+    private ArrayAdapter<String> autoCompleteUnitsAdapter;
 
 
     @Override
@@ -77,6 +83,14 @@ public class EditItemActivity extends AppCompatActivity {
         // Enable the Up button
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("");
+
+        //Set adapter to AutoCompleteTextView enterUnits
+        predefinedUnits.addAll(Arrays.asList(getResources().getStringArray(R.array.predefinedUnits)));
+        units.addAll(CurrentState.getInstance().usersUnits);
+        units.addAll(predefinedUnits);
+        autoCompleteUnitsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, units);
+        enterUnits.setAdapter(autoCompleteUnitsAdapter);
+        enterUnits.setThreshold(1);
 
         //Receiving intent
         itemPosition = (ItemPosition)getIntent().getSerializableExtra("itemPosition");
@@ -198,7 +212,13 @@ public class EditItemActivity extends AppCompatActivity {
             }
             editedItem.setQuantity(quantity);
         }
-        editedItem.setUnit(changedUnits);
+        if (!changedUnits.isEmpty()) {
+            String newUnit = changedUnits.toLowerCase();
+            if (!predefinedUnits.contains(newUnit) && !CurrentState.getInstance().usersUnits.contains(newUnit)){
+                CurrentState.getInstance().usersUnits.add(newUnit);
+            }
+            editedItem.setUnit(newUnit);
+        }
         editedItem.setCategory(changedCategory);
         editedItem.setNotes(notes);
         editedItem.setItemImageFilePath(itemImageFilePath);

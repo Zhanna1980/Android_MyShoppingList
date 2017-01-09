@@ -27,11 +27,7 @@ public class Item {
 
     public void setUnit(String unit) {
         if (unit != null){
-            String newUnit = unit.toLowerCase();
-            if (!newUnit.isEmpty() && !CurrentState.getInstance().units.contains(newUnit)){
-                CurrentState.getInstance().units.add(newUnit);
-            }
-            this.unit = newUnit;
+            this.unit = unit;
         }
     }
 

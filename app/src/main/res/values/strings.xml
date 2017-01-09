@@ -35,4 +35,30 @@
     <string name="parse_quantity_error">Invalid quantity</string>
     <string name="to">to</string>
     <string name="no_lists_for_move_copy">There are no other lists</string>
+    <string-array name="predefinedUnits">
+        <item>bag(s)</item>
+        <item>bottle(s)</item>
+        <item>box(es)</item>
+        <item>bunch(es)</item>
+        <item>can(s)</item>
+        <item>case(s)</item>
+        <item>cm</item>
+        <item>dl</item>
+        <item>dozen(s)</item>
+        <item>g</item>
+        <item>gallon(s)</item>
+        <item>jar(s)</item>
+        <item>kg</item>
+        <item>l</item>
+        <item>large</item>
+        <item>lbs</item>
+        <item>m</item>
+        <item>medium</item>
+        <item>ml</item>
+        <item>pack(s)</item>
+        <item>pair(s)</item>
+        <item>piece(s)</item>
+        <item>roll(s)</item>
+        <item>small</item>
+    </string-array>
 </resources>
