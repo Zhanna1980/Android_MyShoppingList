@@ -1,5 +1,6 @@
 package com.example.zhannalibman.myshoppinglist;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,7 +25,9 @@ import java.util.List;
  * Represents the list of all shopping lists.
  * */
 public class MainActivity extends AppCompatActivity {
-    public static final int REQUEST_CODE_LIST_ACTIVITY = 101;
+    private static final int DIALOG_LIST_EXISTS = 111;
+    private static final int DIALOG_EDIT_LIST_NAME = 112;
+
     List<ShoppingList> listList = CurrentState.getInstance().listList;
 
     EditText enterListName;
@@ -63,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Button btnAddList was clicked
+     * */
     public void onClickAddList(View view) {
         checkAndAdd();
     }
@@ -73,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             enteredListName = getString(R.string.unnamed_list);
         }
         if (isAlreadyInTheList(enteredListName)) {
-            showDialog();
+            showDialogs(DIALOG_LIST_EXISTS, -1);
         }
         else{
             addListToListAndGoToListActivity();
@@ -106,22 +113,47 @@ public class MainActivity extends AppCompatActivity {
         listArrayAdapter.notifyDataSetChanged();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-    }
-
-    public void showDialog(){
-
+    /**
+     * Shows dialog
+     * @param dialogType is a constant which determines which dialog to show
+     * @param positionInListList is the index of the selected list in listList.
+     *                           If there is no specified list the positionInListList is -1;
+     * */
+    public void showDialogs(int dialogType, final int positionInListList){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setIcon(R.drawable.ic_mic_black_24dp);
-        alertDialogBuilder.setMessage(getString(R.string.alert_add_existing_list));
-        alertDialogBuilder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                addListToListAndGoToListActivity();
-            }
-        });
+        alertDialogBuilder.setCancelable(true);
+        if (dialogType == DIALOG_LIST_EXISTS){
+            alertDialogBuilder.setTitle(getString(R.string.alert_add_existing_list));
+            alertDialogBuilder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    addListToListAndGoToListActivity();
+                }
+            });
+        }
+        else if (dialogType == DIALOG_EDIT_LIST_NAME && positionInListList > -1){
+            String listName = listList.get(positionInListList).getName();
+            alertDialogBuilder.setTitle(getString(R.string.edit));
+            final EditText editListName = new EditText(this);
+            alertDialogBuilder.setView(editListName);
+            editListName.setText(listName);
+            editListName.setSelection(editListName.length());
+            alertDialogBuilder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String editedListName = editListName.getText().toString();
+                    if (editedListName.isEmpty()){
+                        editedListName = getString(R.string.unnamed_list);
+                    }
+                    listList.get(positionInListList).setName(editedListName);
+                    listArrayAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+        else{
+            return;
+        }
+
         alertDialogBuilder.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -131,8 +163,24 @@ public class MainActivity extends AppCompatActivity {
 
         AlertDialog dialog = alertDialogBuilder.create();
         dialog.show();
+        doKeepDialog(dialog);
     }
 
+
+    /**
+     * Prevents dialog dismiss when orientation changes
+     * */
+    private static void doKeepDialog(Dialog dialog){
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(dialog.getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        dialog.getWindow().setAttributes(lp);
+    }
+
+    /**
+     * Creates action mode and determines its options
+     * */
     public void createActionMode(){
         actionModeCallback = new ActionMode.Callback() {
             //methods of ActionMode.Callback interface
@@ -157,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.edit:
-                        editSelectedList (listArrayAdapter.getPositionOfSelectedList());
+                        showDialogs (DIALOG_EDIT_LIST_NAME, listArrayAdapter.getPositionOfSelectedList());
                         mode.finish();
                         return true;
                     case R.id.delete:
@@ -179,14 +227,6 @@ public class MainActivity extends AppCompatActivity {
                 actionMode = null;
             }
         };
-    }
-
-    /**
-     * Edits the name of selected list.
-     * @param positionInListList index of the selected item in listList.
-     * */
-    public void editSelectedList (int positionInListList){
-
     }
 
     /**
