@@ -7,18 +7,19 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -40,7 +41,6 @@ public class EditItemActivity extends AppCompatActivity {
     static final int REQUEST_PICK_IMAGE = 302;
     private final int REQUEST_EXTERNAL_STORAGE = 303;
     private static String[] PERMISSIONS_STORAGE = {
-            //Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
@@ -57,8 +57,6 @@ public class EditItemActivity extends AppCompatActivity {
 
     private String itemImageFilePath;
     private boolean shouldTakePhoto = false;
-    private int itemImageWidth = 100;
-    private int itemImageHeight = 100;
     private ArrayList<String> units = new ArrayList<>();
     private ArrayList<String> predefinedUnits = new ArrayList<>();
     private ArrayAdapter<String> autoCompleteUnitsAdapter;
@@ -106,29 +104,32 @@ public class EditItemActivity extends AppCompatActivity {
             itemPosition = new ItemPosition(shoppingListIndexInListList,
                     isSelectedItemInItemList, positionInSectionList);
             itemImageFilePath = savedInstanceState.getString("itemImageFilePath");
-            itemImageWidth = savedInstanceState.getInt("itemImageWidth", 100);
-            itemImageHeight = savedInstanceState.getInt("itemImageHeight", 100);
             shouldTakePhoto = savedInstanceState.getBoolean("shouldTakePhoto");
         }
 
-
         editedItem = itemPosition.getItem();
-        if (editedItem != null){
-            Log.d("Zhanna", editedItem.getName());
-            fillData();
+        if (editedItem == null){
+            handleError();
         }
         else{
-           handleError();
+            //Fills the data into the activity's views after their demensions are known (after completion the layout)
+            itemPhoto.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    fillData();
+                }
+            });
         }
     }
 
     /**
-     * handle errors in passed data
+     * handles errors in passed data
      * */
     private void handleError(){
         Toast.makeText(this, this.getString(R.string.error), Toast.LENGTH_SHORT).show();
         finish();
     }
+
 
     /**
      * Fills the data of the edited item into views of the activity
@@ -279,22 +280,12 @@ public class EditItemActivity extends AppCompatActivity {
         }
     }
 
-    //TODO 1.Decoding bitmap not in main thread.
-    // TODO 2.Calculating sample size of an image.
-    // TODO 3.Solve "rotation problem".
-    //TODO 4.Add taken photos to the photo roll in the Gallery
     private void setItemImageToImageView(String itemImageFilePath){
         if (itemImageFilePath != null && !itemImageFilePath.isEmpty()) {
             // Get the dimensions of the imageView
-            itemImageWidth = itemPhoto.getWidth();
-            itemImageHeight = itemPhoto.getHeight();
-
-            new AsyncTask<String, Void, Bitmap>() {
-                @Override
-                protected Bitmap doInBackground(String... params) {
-                    String itemImageFilePath = params[0];
-
-                    // Get the dimensions of the bitmap
+            int itemImageWidth = itemPhoto.getWidth();
+            int itemImageHeight = itemPhoto.getHeight();
+            // Get the dimensions of the bitmap
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inJustDecodeBounds = true;
                     BitmapFactory.decodeFile(itemImageFilePath, options);
@@ -305,16 +296,9 @@ public class EditItemActivity extends AppCompatActivity {
                     // Decode the image file into a Bitmap sized to fill the View
                     options.inJustDecodeBounds = false;
                     options.inSampleSize = scaleFactor;
-                    //options.inSampleSize=10;
                     Log.d("Zhanna", String.valueOf(scaleFactor));
                     Bitmap bitmap = BitmapFactory.decodeFile(itemImageFilePath, options);
-                    return bitmap;
-                }
-                @Override
-                protected void onPostExecute(Bitmap bitmap) {
                     itemPhoto.setImageBitmap(bitmap);
-                }
-            }.execute(itemImageFilePath);
         }
     }
 
@@ -324,17 +308,13 @@ public class EditItemActivity extends AppCompatActivity {
         savedInstanceState.putInt("shoppingListIndexInListList", itemPosition.shoppingListIndexInListList);
         savedInstanceState.putBoolean("isSelectedItemInItemList", itemPosition.isSelectedItemInItemList);
         savedInstanceState.putInt("positionInSectionList", itemPosition.positionInSectionList);
-        savedInstanceState.putInt("itemImageWidth", itemImageWidth);
-        savedInstanceState.putInt("itemImageHeight", itemImageHeight);
         savedInstanceState.putBoolean("shouldTakePhoto", shouldTakePhoto);
         super.onSaveInstanceState(savedInstanceState);
     }
 
     /**
      * Checks if the app has permission to write to device storage
-     *
      * If the app does not has permission then the user will be prompted to grant permissions
-     *
      */
     public void verifyStoragePermissions(boolean shouldTakePhoto) {
         // Check if we have write permission
@@ -359,6 +339,10 @@ public class EditItemActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * If user gives his permission for writing external storage he proceeds to taking/picking photo.
+     * Otherwise there will be an alertDialog shown that taking pictures needs permission to write to external storage
+     * */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_EXTERNAL_STORAGE){
@@ -371,7 +355,7 @@ public class EditItemActivity extends AppCompatActivity {
                 }
             }
             else{
-                Toast.makeText(this, getString(R.string.storage_permission_denied), Toast.LENGTH_LONG).show();
+                showAlertDialog();
             }
         }
     }
@@ -384,7 +368,9 @@ public class EditItemActivity extends AppCompatActivity {
     public void pickPhoto(){
         // Create intent to Open Image applications like Gallery, Google Photos
         Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        galleryIntent.setType("image/*");
+        galleryIntent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
         // Start the Intent
         startActivityForResult(galleryIntent, REQUEST_PICK_IMAGE);
     }
@@ -392,5 +378,14 @@ public class EditItemActivity extends AppCompatActivity {
     public void onBtnDeletePhotoClick(View view) {
         itemPhoto.setImageBitmap(null);
         itemImageFilePath = null;
+    }
+
+    public void showAlertDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setCancelable(true);
+        alertDialogBuilder.setMessage(getString(R.string.storage_permission_denied));
+        alertDialogBuilder.setPositiveButton(getString(R.string.ok), null);
+        AlertDialog dialog = alertDialogBuilder.create();
+        dialog.show();
     }
 }
